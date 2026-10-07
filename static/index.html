@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuBatch AI - Trợ lý Xử lý & Trích xuất Đa Tài Liệu</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="/static/logo.png">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased font-sans">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <img src="/static/logo.png" alt="DocuBatch AI Logo" class="w-10 h-10 object-contain drop-shadow-sm">
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-bold tracking-tight text-slate-900">Quét Tài Liệu <span class="text-brand-600">AI</span></h1>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+              <i class="fa-solid fa-wand-magic-sparkles mr-1 text-[10px]"></i> Flash 2.5
+            </span>
+          </div>
+          <p class="text-xs text-slate-500">Trích xuất & đối soát dữ liệu hàng loạt tài liệu thông minh</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <!-- API Key Status Badge -->
+        <button id="btnOpenSettings" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium hover:bg-slate-50 transition">
+          <span id="apiKeyIndicator" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span id="apiKeyText" class="text-slate-600">Cấu hình API Key</span>
+          <i class="fa-solid fa-gear text-slate-400 ml-1"></i>
+        </button>
+
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="hidden sm:inline-flex items-center text-xs text-blue-600 hover:text-blue-800 hover:underline">
+          <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Lấy Key miễn phí
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col space-y-6">
+
+    <!-- Section 1: Template & Schema Configuration -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+        <div>
+          <h2 class="text-base font-semibold text-slate-900 flex items-center">
+            <i class="fa-solid fa-layer-group text-brand-600 mr-2"></i> 1. Mẫu tài liệu & Các trường cần trích xuất
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Chọn mẫu văn bản phù hợp hoặc tự thêm các cột bạn muốn AI đọc tự động.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <label for="templateSelect" class="text-xs font-medium text-slate-600 whitespace-nowrap">Mẫu có sẵn:</label>
+          <select id="templateSelect" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2">
+            <option value="invoice">🧾 Hóa đơn / Chứng từ thanh toán</option>
+            <option value="contract">📑 Hợp đồng kinh tế / Thỏa thuận</option>
+            <option value="resume">📄 Hồ sơ ứng viên / CV</option>
+            <option value="order">📦 Đơn đặt hàng / Phiếu giao hàng</option>
+            <option value="custom">⚙️ Tùy chỉnh (Tự tạo trường)</option>
+          </select>
+          <button id="btnOpenSchemaModal" class="px-3 py-2 text-xs font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition flex items-center space-x-1">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Chỉnh sửa trường</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Schema Fields Tags -->
+      <div class="flex flex-wrap items-center gap-2" id="schemaTagsList">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Section 2: Upload Zone & Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Upload Dropzone (1 col on large screens) -->
+      <div class="lg:col-span-1 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col">
+        <h2 class="text-base font-semibold text-slate-900 mb-3 flex items-center">
+          <i class="fa-solid fa-cloud-arrow-up text-brand-600 mr-2"></i> 2. Tải tài liệu lên
+        </h2>
+
+        <div id="dropZone" class="flex-1 min-h-[220px] border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-brand-500 hover:bg-brand-50/30 transition-all cursor-pointer">
+          <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" class="hidden">
+          <div class="w-14 h-14 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mb-3">
+            <i class="fa-solid fa-file-arrow-up text-2xl"></i>
+          </div>
+          <p class="text-sm font-semibold text-slate-800">Kéo thả nhiều file vào đây</p>
+          <p class="text-xs text-slate-500 mt-1">hoặc <span class="text-brand-600 font-medium">Bấm để chọn file từ máy</span></p>
+          <p class="text-[11px] text-slate-400 mt-3">Hỗ trợ: PDF, PNG, JPG, JPEG (tối đa 20MB/file)</p>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
+          <span id="queueCounter">Đã chọn: 0 file</span>
+          <button id="btnClearQueue" class="text-rose-600 hover:underline hidden">Xóa hàng chờ</button>
+        </div>
+
+        <button id="btnStartBatch" class="mt-3 w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white rounded-xl font-medium text-sm shadow-md shadow-brand-500/20 flex items-center justify-center space-x-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Bắt đầu Trích xuất AI</span>
+        </button>
+      </div>
+
+      <!-- File Queue & Processing Progress List (2 cols on large screens) -->
+      <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold text-slate-900 flex items-center">
+            <i class="fa-solid fa-list-check text-brand-600 mr-2"></i> Danh sách xử lý
+          </h2>
+          <div class="flex items-center space-x-2">
+            <span id="batchProgressSummary" class="text-xs font-medium text-slate-500">Chưa có tác vụ</span>
+          </div>
+        </div>
+
+        <!-- Scrollable list of files -->
+        <div id="fileQueueContainer" class="flex-1 overflow-y-auto max-h-[300px] space-y-2 pr-1 divide-y divide-slate-100">
+          <div id="emptyQueueMsg" class="py-12 text-center text-slate-400">
+            <i class="fa-regular fa-folder-open text-4xl mb-2 text-slate-300"></i>
+            <p class="text-sm">Chưa có tệp nào được tải lên.</p>
+            <p class="text-xs text-slate-400 mt-1">Hãy kéo thả hóa đơn, hợp đồng vào ô bên trái để bắt đầu.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Master Data Table & Export -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col flex-1">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-base font-semibold text-slate-900 flex items-center">
+            <i class="fa-solid fa-table-list text-brand-600 mr-2"></i> 3. Bảng Dữ liệu Tổng hợp & Đối soát
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Nhấp vào từng dòng để mở màn hình đối soát song song (Split-screen).</p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button id="btnClearTable" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="Xóa toàn bộ các dòng trong bảng">
+            <i class="fa-solid fa-trash-can"></i>
+            <span>Xóa bảng</span>
+          </button>
+          <button id="btnExportExcel" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-medium shadow-sm transition flex items-center space-x-1.5 disabled:opacity-50">
+            <i class="fa-solid fa-file-excel"></i>
+            <span>Xuất file Excel (.xlsx)</span>
+          </button>
+          <button id="btnExportJson" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium transition flex items-center space-x-1.5 disabled:opacity-50">
+            <i class="fa-solid fa-code"></i>
+            <span>Xuất JSON</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Container -->
+      <div class="overflow-x-auto border border-slate-200 rounded-xl flex-1">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase font-semibold">
+            <tr id="tableHeaderRow">
+              <th class="p-3 w-12 text-center">STT</th>
+              <th class="p-3 w-44">Tài liệu</th>
+              <!-- Dynamic Headers -->
+              <th class="p-3 w-28 text-center">Đối soát</th>
+              <th class="p-3 w-24 text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td colspan="6" class="p-8 text-center text-slate-400">
+                Chưa có dữ liệu nào được trích xuất.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. Settings / API Key Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900 flex items-center">
+          <i class="fa-solid fa-key text-brand-600 mr-2"></i> Cấu hình Gemini API Key
+        </h3>
+        <button id="btnCloseSettings" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Google Gemini API Key:</label>
+          <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-brand-500 focus:border-brand-500 font-mono">
+          <p class="text-[11px] text-slate-500 mt-1">Key được lưu an toàn trong trình duyệt của bạn (Local Storage).</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Mô hình AI:</label>
+          <select id="selectModel" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+            <option value="auto">✨ Tự động nhận diện model khả dụng (Khuyên dùng)</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Tốc độ cao, thế hệ mới)</option>
+            <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Độ chính xác cao nhất)</option>
+          </select>
+        </div>
+
+        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 text-xs text-blue-800 leading-relaxed">
+          <p class="font-medium">💡 Chưa có API Key?</p>
+          <p class="text-[11px] mt-0.5 text-blue-700">Truy cập <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline font-semibold">Google AI Studio</a> để tạo key miễn phí trong vòng 30 giây.</p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end space-x-2">
+        <button id="btnSaveSettings" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium">
+          Lưu cấu hình
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Schema Builder Modal -->
+  <div id="schemaModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 flex items-center">
+            <i class="fa-solid fa-sliders text-brand-600 mr-2"></i> Tùy chỉnh các trường trích xuất
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">Thêm hoặc bớt các trường thông tin bạn muốn AI bóc tách.</p>
+        </div>
+        <button id="btnCloseSchemaModal" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto my-4 space-y-2 pr-1" id="schemaFieldsEditorList">
+        <!-- Schema fields inputs generated by JS -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+        <button id="btnAddFieldBtn" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium flex items-center space-x-1">
+          <i class="fa-solid fa-plus"></i>
+          <span>Thêm trường mới</span>
+        </button>
+        <button id="btnSaveSchemaBtn" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium">
+          Áp dụng mẫu này
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Split-Screen Review Modal (Tài liệu gốc & Form chỉnh sửa) -->
+  <div id="reviewModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+    <div class="bg-white rounded-2xl w-full max-w-7xl h-[92vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      
+      <!-- Review Modal Header -->
+      <div class="h-14 px-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center space-x-3">
+          <span class="p-2 rounded-lg bg-blue-100 text-brand-700">
+            <i class="fa-solid fa-magnifying-glass-arrow-right"></i>
+          </span>
+          <div>
+            <h3 id="reviewModalTitle" class="text-sm font-bold text-slate-900">Chi tiết tài liệu</h3>
+            <p id="reviewModalSubtitle" class="text-[11px] text-slate-500">Màn hình đối soát song song</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <button id="btnToggleVerify" class="px-3.5 py-1.5 rounded-lg text-xs font-medium border flex items-center space-x-1.5 transition">
+            <i class="fa-solid fa-check"></i>
+            <span id="btnVerifyText">Đánh dấu đã đối soát</span>
+          </button>
+          <button id="btnSaveReviewForm" class="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-sm transition">
+            Lưu thay đổi
+          </button>
+          <button id="btnCloseReviewModal" class="text-slate-400 hover:text-slate-600 text-xl pl-2">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Review Body: Split Screen -->
+      <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- Left: Document Viewer (PDF / Image) -->
+        <div class="flex-1 bg-slate-900/90 flex flex-col border-r border-slate-200 overflow-hidden relative">
+          <div class="h-9 px-4 bg-slate-800 text-slate-300 text-xs flex items-center justify-between">
+            <span id="viewerFilename" class="truncate max-w-xs font-mono">Tài liệu gốc</span>
+            <a id="btnOpenRawFile" href="#" target="_blank" class="text-blue-400 hover:underline text-[11px]">
+              <i class="fa-solid fa-external-link mr-1"></i> Mở tab mới
+            </a>
+          </div>
+          <div class="flex-1 overflow-auto flex items-center justify-center p-2" id="documentViewerContainer">
+            <!-- Iframe or Img injected here -->
+          </div>
+        </div>
+
+        <!-- Right: Extracted Fields Editor Form -->
+        <div class="w-full md:w-[480px] bg-white flex flex-col h-full overflow-hidden">
+          <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-700">Dữ liệu bóc tách được:</span>
+              <span id="reviewConfidenceBadge" class="text-[11px] font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                Độ tin cậy: 95%
+              </span>
+            </div>
+            <div id="reviewAiSummary" class="mt-2 text-xs text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200 italic">
+              Đang tải tóm tắt...
+            </div>
+          </div>
+
+          <!-- Fields list -->
+          <div class="flex-1 overflow-y-auto p-4 space-y-3.5" id="reviewFormFields">
+            <!-- Dynamic Form Fields rendered here -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

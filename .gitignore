@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Uploads (dữ liệu người dùng, không commit)
+uploads/
+
+# IDE
+.idea/
+.vscode/
+
+# Build artifacts
+*.exe
+*.zip
+
+# Environment variables
+.env
