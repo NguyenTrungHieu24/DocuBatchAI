@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DocuBatch AI - Trợ lý Xử lý & Trích xuất Đa Tài Liệu</title>
+  <title>DocuBatch AI - Trợ lý Xử lý &amp; Trích xuất Đa Tài Liệu</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -44,7 +44,7 @@
               <i class="fa-solid fa-wand-magic-sparkles mr-1 text-[10px]"></i> Flash 2.5
             </span>
           </div>
-          <p class="text-xs text-slate-500">Trích xuất & đối soát dữ liệu hàng loạt tài liệu thông minh</p>
+          <p class="text-xs text-slate-500">Trích xuất &amp; đối soát dữ liệu hàng loạt tài liệu thông minh</p>
         </div>
       </div>
 
@@ -71,7 +71,7 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
         <div>
           <h2 class="text-base font-semibold text-slate-900 flex items-center">
-            <i class="fa-solid fa-layer-group text-brand-600 mr-2"></i> 1. Mẫu tài liệu & Các trường cần trích xuất
+            <i class="fa-solid fa-layer-group text-brand-600 mr-2"></i> 1. Mẫu tài liệu &amp; Các trường cần trích xuất
           </h2>
           <p class="text-xs text-slate-500 mt-0.5">Chọn mẫu văn bản phù hợp hoặc tự thêm các cột bạn muốn AI đọc tự động.</p>
         </div>
@@ -106,7 +106,7 @@
           <i class="fa-solid fa-cloud-arrow-up text-brand-600 mr-2"></i> 2. Tải tài liệu lên
         </h2>
 
-        <div id="dropZone" class="flex-1 min-h-[220px] border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-brand-500 hover:bg-brand-50/30 transition-all cursor-pointer">
+        <div id="dropZone" class="flex-1 min-h-[180px] border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-brand-500 hover:bg-brand-50/30 transition-all cursor-pointer">
           <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" class="hidden">
           <div class="w-14 h-14 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mb-3">
             <i class="fa-solid fa-file-arrow-up text-2xl"></i>
@@ -117,9 +117,9 @@
         </div>
 
         <!-- Camera Capture Button -->
-        <button id="btnOpenCamera" class="mt-3 w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-sm flex items-center justify-center space-x-2 transition border border-slate-200">
-          <i class="fa-solid fa-camera text-brand-600"></i>
-          <span>Chụp ảnh trực tiếp từ Camera</span>
+        <button id="btnOpenCamera" class="mt-3 w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-medium text-sm flex items-center justify-center space-x-2 transition shadow-sm">
+          <i class="fa-solid fa-camera text-white"></i>
+          <span>Chụp ảnh từ Camera</span>
         </button>
 
         <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
@@ -160,7 +160,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div>
           <h2 class="text-base font-semibold text-slate-900 flex items-center">
-            <i class="fa-solid fa-table-list text-brand-600 mr-2"></i> 3. Bảng Dữ liệu Tổng hợp & Đối soát
+            <i class="fa-solid fa-table-list text-brand-600 mr-2"></i> 3. Bảng Dữ liệu Tổng hợp &amp; Đối soát
           </h2>
           <p class="text-xs text-slate-500 mt-0.5">Nhấp vào từng dòng để mở màn hình đối soát song song (Split-screen).</p>
         </div>
@@ -282,7 +282,7 @@
     </div>
   </div>
 
-  <!-- 3. Split-Screen Review Modal (Tài liệu gốc & Form chỉnh sửa) -->
+  <!-- 3. Split-Screen Review Modal -->
   <div id="reviewModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
     <div class="bg-white rounded-2xl w-full max-w-7xl h-[92vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
       
@@ -315,7 +315,7 @@
       <!-- Review Body: Split Screen -->
       <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
         
-        <!-- Left: Document Viewer (PDF / Image) -->
+        <!-- Left: Document Viewer -->
         <div class="flex-1 bg-slate-900/90 flex flex-col border-r border-slate-200 overflow-hidden relative">
           <div class="h-9 px-4 bg-slate-800 text-slate-300 text-xs flex items-center justify-between">
             <span id="viewerFilename" class="truncate max-w-xs font-mono">Tài liệu gốc</span>
@@ -352,57 +352,86 @@
     </div>
   </div>
 
-  <!-- 4. Camera Capture Modal -->
-  <div id="cameraModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
-      <!-- Header -->
-      <div class="h-14 px-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-        <div class="flex items-center space-x-2">
-          <span class="p-2 rounded-lg bg-brand-100 text-brand-600"><i class="fa-solid fa-camera"></i></span>
-          <div>
-            <h3 class="text-sm font-bold text-slate-900">Chụp ảnh tài liệu</h3>
-            <p class="text-[11px] text-slate-500">Đặt tài liệu trước camera rồi bấm chụp</p>
-          </div>
+  <!-- ================= CAMERA MODAL ================= -->
+  <div id="cameraModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center hidden" style="background:rgba(0,0,0,0.88);">
+    <div class="bg-black w-full max-w-lg rounded-t-[2rem] sm:rounded-[2rem] overflow-hidden flex flex-col shadow-2xl">
+
+      <!-- Top bar -->
+      <div class="flex items-center justify-between px-5 pt-5 pb-2">
+        <div>
+          <p class="text-white text-sm font-semibold">Chụp tài liệu</p>
+          <p class="text-white/40 text-[11px] mt-0.5">Căn tài liệu vào khung rồi bấm nút tròn</p>
         </div>
-        <button id="btnCloseCamera" class="text-slate-400 hover:text-slate-600 text-xl">
-          <i class="fa-solid fa-xmark"></i>
+        <button id="btnCloseCamera"
+          class="w-9 h-9 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
 
-      <!-- Video / Canvas area -->
-      <div class="relative bg-black flex items-center justify-center" style="min-height:340px;">
-        <!-- Live video stream -->
-        <video id="cameraVideo" autoplay playsinline class="w-full max-h-[400px] object-contain"></video>
-        <!-- Canvas for captured frame (hidden initially) -->
-        <canvas id="cameraCanvas" class="w-full max-h-[400px] object-contain hidden"></canvas>
-        <!-- Corner guides overlay -->
-        <div id="cameraGuide" class="absolute inset-4 pointer-events-none">
-          <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/70 rounded-tl-sm"></div>
-          <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/70 rounded-tr-sm"></div>
-          <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/70 rounded-bl-sm"></div>
-          <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/70 rounded-br-sm"></div>
+      <!-- Viewfinder area -->
+      <div class="relative bg-neutral-950 mx-3 rounded-2xl overflow-hidden" style="min-height:340px;">
+        <!-- Live video -->
+        <video id="cameraVideo" autoplay playsinline muted
+          class="w-full h-full object-cover" style="max-height:420px; display:block;"></video>
+
+        <!-- Preview canvas (hidden until snap) -->
+        <canvas id="cameraCanvas"
+          class="absolute inset-0 w-full h-full object-cover hidden"></canvas>
+
+        <!-- Corner bracket guides -->
+        <div id="cameraGuide" class="absolute inset-5 pointer-events-none">
+          <div class="absolute top-0 left-0 w-9 h-9 border-t-[3px] border-l-[3px] border-white/70 rounded-tl-xl"></div>
+          <div class="absolute top-0 right-0 w-9 h-9 border-t-[3px] border-r-[3px] border-white/70 rounded-tr-xl"></div>
+          <div class="absolute bottom-0 left-0 w-9 h-9 border-b-[3px] border-l-[3px] border-white/70 rounded-bl-xl"></div>
+          <div class="absolute bottom-0 right-0 w-9 h-9 border-b-[3px] border-r-[3px] border-white/70 rounded-br-xl"></div>
         </div>
+
+        <!-- White flash overlay -->
+        <div id="cameraFlash" class="absolute inset-0 bg-white pointer-events-none" style="opacity:0; transition:opacity 0.08s;"></div>
+
+        <!-- Switch camera – top right of viewfinder -->
+        <button id="btnSwitchCamera"
+          class="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-camera-rotate text-sm"></i>
+        </button>
       </div>
 
       <!-- Controls -->
-      <div class="p-4 flex items-center justify-between gap-3 bg-slate-50 border-t border-slate-200">
-        <!-- Switch camera -->
-        <button id="btnSwitchCamera" class="px-3 py-2 text-xs font-medium text-slate-600 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl flex items-center space-x-1.5 transition" title="Đổi camera">
-          <i class="fa-solid fa-rotate"></i>
-          <span class="hidden sm:inline">Đổi camera</span>
+      <div class="flex items-center justify-between px-10 py-7">
+
+        <!-- Left: Chụp lại (hidden until captured) -->
+        <div id="btnRetakeWrap" class="hidden flex-col items-center gap-2">
+          <button id="btnRetake"
+            class="w-13 h-13 w-[52px] h-[52px] rounded-full bg-white/12 hover:bg-white/20 border border-white/20 flex items-center justify-center transition active:scale-90">
+            <i class="fa-solid fa-rotate-left text-white text-base"></i>
+          </button>
+          <span class="text-white/40 text-[11px]">Chụp lại</span>
+        </div>
+        <!-- Spacer -->
+        <div id="retakeSpacer" class="w-[52px]"></div>
+
+        <!-- Center: Nút chụp (Shutter) -->
+        <button id="btnCapture"
+          class="relative w-[78px] h-[78px] rounded-full flex-shrink-0 flex items-center justify-center active:scale-90 transition-transform duration-100 focus:outline-none"
+          style="box-shadow: 0 0 0 5px rgba(255,255,255,0.22);">
+          <!-- Outer white ring -->
+          <span class="absolute inset-0 rounded-full bg-white"></span>
+          <!-- Inner circle -->
+          <span id="shutterInner"
+            class="relative z-10 w-[60px] h-[60px] rounded-full bg-white border-[3.5px] border-slate-200 transition-all duration-100"></span>
         </button>
 
-        <!-- Capture / Retake -->
-        <button id="btnCapture" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-md shadow-brand-500/30 transition">
-          <i class="fa-solid fa-camera"></i>
-          <span>Chụp ảnh</span>
-        </button>
+        <!-- Right: Dùng ảnh này (hidden until captured) -->
+        <div id="btnConfirmWrap" class="hidden flex-col items-center gap-2">
+          <button id="btnConfirmCapture"
+            class="w-[52px] h-[52px] rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center transition shadow-lg shadow-emerald-500/30 active:scale-90">
+            <i class="fa-solid fa-check text-white text-lg"></i>
+          </button>
+          <span class="text-white/40 text-[11px]">Dùng ảnh</span>
+        </div>
+        <!-- Spacer -->
+        <div id="confirmSpacer" class="w-[52px]"></div>
 
-        <!-- Confirm (hidden until captured) -->
-        <button id="btnConfirmCapture" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-sm transition hidden">
-          <i class="fa-solid fa-check"></i>
-          <span>Dùng ảnh này</span>
-        </button>
       </div>
     </div>
   </div>

@@ -812,24 +812,44 @@ document.addEventListener("DOMContentLoaded", init);
   let facingMode = "environment"; // 'environment' = back cam, 'user' = front cam
   let hasCaptured = false;
 
-  const modal      = document.getElementById("cameraModal");
-  const video      = document.getElementById("cameraVideo");
-  const canvas     = document.getElementById("cameraCanvas");
-  const guide      = document.getElementById("cameraGuide");
-  const btnOpen    = document.getElementById("btnOpenCamera");
-  const btnClose   = document.getElementById("btnCloseCamera");
-  const btnSwitch  = document.getElementById("btnSwitchCamera");
-  const btnCapture = document.getElementById("btnCapture");
-  const btnConfirm = document.getElementById("btnConfirmCapture");
+  const modal           = document.getElementById("cameraModal");
+  const video           = document.getElementById("cameraVideo");
+  const canvas          = document.getElementById("cameraCanvas");
+  const guide           = document.getElementById("cameraGuide");
+  const flash           = document.getElementById("cameraFlash");
+  const btnOpen         = document.getElementById("btnOpenCamera");
+  const btnClose        = document.getElementById("btnCloseCamera");
+  const btnSwitch       = document.getElementById("btnSwitchCamera");
+  const btnCapture      = document.getElementById("btnCapture");
+  const shutterInner    = document.getElementById("shutterInner");
+  const btnRetake       = document.getElementById("btnRetake");
+  const btnRetakeWrap   = document.getElementById("btnRetakeWrap");
+  const retakeSpacer    = document.getElementById("retakeSpacer");
+  const btnConfirm      = document.getElementById("btnConfirmCapture");
+  const btnConfirmWrap  = document.getElementById("btnConfirmWrap");
+  const confirmSpacer   = document.getElementById("confirmSpacer");
+
+  function setPostCaptureUI(captured) {
+    // Retake group
+    if (btnRetakeWrap) {
+      btnRetakeWrap.style.display = captured ? "flex" : "none";
+    }
+    if (retakeSpacer) retakeSpacer.style.display = captured ? "none" : "block";
+
+    // Confirm group
+    if (btnConfirmWrap) {
+      btnConfirmWrap.style.display = captured ? "flex" : "none";
+    }
+    if (confirmSpacer) confirmSpacer.style.display = captured ? "none" : "block";
+  }
 
   async function startCamera() {
     stopCamera();
     hasCaptured = false;
     video.classList.remove("hidden");
     canvas.classList.add("hidden");
-    guide.classList.remove("hidden");
-    btnCapture.innerHTML = `<i class="fa-solid fa-camera"></i><span>Chụp ảnh</span>`;
-    btnConfirm.classList.add("hidden");
+    if (guide) guide.classList.remove("hidden");
+    setPostCaptureUI(false);
 
     try {
       cameraStream = await navigator.mediaDevices.getUserMedia({
@@ -848,45 +868,56 @@ document.addEventListener("DOMContentLoaded", init);
       cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
     }
-    video.srcObject = null;
+    if (video) video.srcObject = null;
   }
 
   function openCamera() {
-    modal.classList.remove("hidden");
+    if (modal) modal.classList.remove("hidden");
     startCamera();
   }
 
   function closeCamera() {
     stopCamera();
-    modal.classList.add("hidden");
+    if (modal) modal.classList.add("hidden");
     hasCaptured = false;
+  }
+
+  function triggerFlash() {
+    if (!flash) return;
+    flash.style.opacity = "0.85";
+    setTimeout(() => { flash.style.opacity = "0"; }, 120);
   }
 
   function captureFrame() {
     if (hasCaptured) {
-      // Retake
+      // ---- Chụp lại: quay về live stream ----
       hasCaptured = false;
       video.classList.remove("hidden");
       canvas.classList.add("hidden");
-      guide.classList.remove("hidden");
-      btnCapture.innerHTML = `<i class="fa-solid fa-camera"></i><span>Chụp ảnh</span>`;
-      btnConfirm.classList.add("hidden");
+      if (guide) guide.classList.remove("hidden");
+      setPostCaptureUI(false);
       return;
     }
 
-    // Draw current video frame onto canvas
+    // ---- Chụp: lấy frame hiện tại ----
+    // Shutter animation: thu nhỏ inner rồi phục hồi
+    if (shutterInner) {
+      shutterInner.style.transform = "scale(0.7)";
+      setTimeout(() => { shutterInner.style.transform = "scale(1)"; }, 180);
+    }
+
+    triggerFlash();
+
     canvas.width  = video.videoWidth  || 1280;
     canvas.height = video.videoHeight || 720;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Show canvas, hide video
     hasCaptured = true;
     video.classList.add("hidden");
     canvas.classList.remove("hidden");
-    guide.classList.add("hidden");
-    btnCapture.innerHTML = `<i class="fa-solid fa-rotate-left"></i><span>Chụp lại</span>`;
-    btnConfirm.classList.remove("hidden");
+    if (guide) guide.classList.add("hidden");
+    setPostCaptureUI(true);
   }
 
   function confirmCapture() {
@@ -900,7 +931,7 @@ document.addEventListener("DOMContentLoaded", init);
       handleFilesAdded([file]);
       showToast("Đã thêm ảnh vào hàng chờ!", "success");
       closeCamera();
-    }, "image/jpeg", 0.92);
+    }, "image/jpeg", 0.93);
   }
 
   async function switchCamera() {
@@ -909,14 +940,18 @@ document.addEventListener("DOMContentLoaded", init);
   }
 
   // Wire events
-  btnOpen   && btnOpen.addEventListener("click", openCamera);
-  btnClose  && btnClose.addEventListener("click", closeCamera);
-  btnCapture && btnCapture.addEventListener("click", captureFrame);
-  btnConfirm && btnConfirm.addEventListener("click", confirmCapture);
-  btnSwitch  && btnSwitch.addEventListener("click", switchCamera);
+  if (btnOpen)    btnOpen.addEventListener("click", openCamera);
+  if (btnClose)   btnClose.addEventListener("click", closeCamera);
+  if (btnCapture) btnCapture.addEventListener("click", captureFrame);
+  if (btnRetake)  btnRetake.addEventListener("click", captureFrame); // same action = retake
+  if (btnConfirm) btnConfirm.addEventListener("click", confirmCapture);
+  if (btnSwitch)  btnSwitch.addEventListener("click", switchCamera);
 
   // Close on backdrop click
-  modal && modal.addEventListener("click", (e) => {
+  if (modal) modal.addEventListener("click", (e) => {
     if (e.target === modal) closeCamera();
   });
+
+  // Init spacers visible
+  setPostCaptureUI(false);
 })();
