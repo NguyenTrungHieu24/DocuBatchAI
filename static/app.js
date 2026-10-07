@@ -805,3 +805,118 @@ function setupEventListeners() {
 
 // Start
 document.addEventListener("DOMContentLoaded", init);
+
+// ================= CAMERA CAPTURE =================
+(function() {
+  let cameraStream = null;
+  let facingMode = "environment"; // 'environment' = back cam, 'user' = front cam
+  let hasCaptured = false;
+
+  const modal      = document.getElementById("cameraModal");
+  const video      = document.getElementById("cameraVideo");
+  const canvas     = document.getElementById("cameraCanvas");
+  const guide      = document.getElementById("cameraGuide");
+  const btnOpen    = document.getElementById("btnOpenCamera");
+  const btnClose   = document.getElementById("btnCloseCamera");
+  const btnSwitch  = document.getElementById("btnSwitchCamera");
+  const btnCapture = document.getElementById("btnCapture");
+  const btnConfirm = document.getElementById("btnConfirmCapture");
+
+  async function startCamera() {
+    stopCamera();
+    hasCaptured = false;
+    video.classList.remove("hidden");
+    canvas.classList.add("hidden");
+    guide.classList.remove("hidden");
+    btnCapture.innerHTML = `<i class="fa-solid fa-camera"></i><span>Chụp ảnh</span>`;
+    btnConfirm.classList.add("hidden");
+
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false
+      });
+      video.srcObject = cameraStream;
+    } catch (err) {
+      showToast("Không thể mở camera: " + err.message, "error");
+      closeCamera();
+    }
+  }
+
+  function stopCamera() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      cameraStream = null;
+    }
+    video.srcObject = null;
+  }
+
+  function openCamera() {
+    modal.classList.remove("hidden");
+    startCamera();
+  }
+
+  function closeCamera() {
+    stopCamera();
+    modal.classList.add("hidden");
+    hasCaptured = false;
+  }
+
+  function captureFrame() {
+    if (hasCaptured) {
+      // Retake
+      hasCaptured = false;
+      video.classList.remove("hidden");
+      canvas.classList.add("hidden");
+      guide.classList.remove("hidden");
+      btnCapture.innerHTML = `<i class="fa-solid fa-camera"></i><span>Chụp ảnh</span>`;
+      btnConfirm.classList.add("hidden");
+      return;
+    }
+
+    // Draw current video frame onto canvas
+    canvas.width  = video.videoWidth  || 1280;
+    canvas.height = video.videoHeight || 720;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Show canvas, hide video
+    hasCaptured = true;
+    video.classList.add("hidden");
+    canvas.classList.remove("hidden");
+    guide.classList.add("hidden");
+    btnCapture.innerHTML = `<i class="fa-solid fa-rotate-left"></i><span>Chụp lại</span>`;
+    btnConfirm.classList.remove("hidden");
+  }
+
+  function confirmCapture() {
+    canvas.toBlob(blob => {
+      if (!blob) {
+        showToast("Không thể lấy ảnh từ camera.", "error");
+        return;
+      }
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const file = new File([blob], `camera_${timestamp}.jpg`, { type: "image/jpeg" });
+      handleFilesAdded([file]);
+      showToast("Đã thêm ảnh vào hàng chờ!", "success");
+      closeCamera();
+    }, "image/jpeg", 0.92);
+  }
+
+  async function switchCamera() {
+    facingMode = facingMode === "environment" ? "user" : "environment";
+    await startCamera();
+  }
+
+  // Wire events
+  btnOpen   && btnOpen.addEventListener("click", openCamera);
+  btnClose  && btnClose.addEventListener("click", closeCamera);
+  btnCapture && btnCapture.addEventListener("click", captureFrame);
+  btnConfirm && btnConfirm.addEventListener("click", confirmCapture);
+  btnSwitch  && btnSwitch.addEventListener("click", switchCamera);
+
+  // Close on backdrop click
+  modal && modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeCamera();
+  });
+})();

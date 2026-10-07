@@ -116,6 +116,12 @@
           <p class="text-[11px] text-slate-400 mt-3">Hỗ trợ: PDF, PNG, JPG, JPEG (tối đa 20MB/file)</p>
         </div>
 
+        <!-- Camera Capture Button -->
+        <button id="btnOpenCamera" class="mt-3 w-full py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-sm flex items-center justify-center space-x-2 transition border border-slate-200">
+          <i class="fa-solid fa-camera text-brand-600"></i>
+          <span>Chụp ảnh trực tiếp từ Camera</span>
+        </button>
+
         <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
           <span id="queueCounter">Đã chọn: 0 file</span>
           <button id="btnClearQueue" class="text-rose-600 hover:underline hidden">Xóa hàng chờ</button>
@@ -343,6 +349,61 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- 4. Camera Capture Modal -->
+  <div id="cameraModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="h-14 px-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center space-x-2">
+          <span class="p-2 rounded-lg bg-brand-100 text-brand-600"><i class="fa-solid fa-camera"></i></span>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Chụp ảnh tài liệu</h3>
+            <p class="text-[11px] text-slate-500">Đặt tài liệu trước camera rồi bấm chụp</p>
+          </div>
+        </div>
+        <button id="btnCloseCamera" class="text-slate-400 hover:text-slate-600 text-xl">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Video / Canvas area -->
+      <div class="relative bg-black flex items-center justify-center" style="min-height:340px;">
+        <!-- Live video stream -->
+        <video id="cameraVideo" autoplay playsinline class="w-full max-h-[400px] object-contain"></video>
+        <!-- Canvas for captured frame (hidden initially) -->
+        <canvas id="cameraCanvas" class="w-full max-h-[400px] object-contain hidden"></canvas>
+        <!-- Corner guides overlay -->
+        <div id="cameraGuide" class="absolute inset-4 pointer-events-none">
+          <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/70 rounded-tl-sm"></div>
+          <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/70 rounded-tr-sm"></div>
+          <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/70 rounded-bl-sm"></div>
+          <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/70 rounded-br-sm"></div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="p-4 flex items-center justify-between gap-3 bg-slate-50 border-t border-slate-200">
+        <!-- Switch camera -->
+        <button id="btnSwitchCamera" class="px-3 py-2 text-xs font-medium text-slate-600 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl flex items-center space-x-1.5 transition" title="Đổi camera">
+          <i class="fa-solid fa-rotate"></i>
+          <span class="hidden sm:inline">Đổi camera</span>
+        </button>
+
+        <!-- Capture / Retake -->
+        <button id="btnCapture" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-md shadow-brand-500/30 transition">
+          <i class="fa-solid fa-camera"></i>
+          <span>Chụp ảnh</span>
+        </button>
+
+        <!-- Confirm (hidden until captured) -->
+        <button id="btnConfirmCapture" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold flex items-center space-x-2 shadow-sm transition hidden">
+          <i class="fa-solid fa-check"></i>
+          <span>Dùng ảnh này</span>
+        </button>
+      </div>
     </div>
   </div>
 
