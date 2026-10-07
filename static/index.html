@@ -353,8 +353,8 @@
   </div>
 
   <!-- ================= CAMERA MODAL ================= -->
-  <div id="cameraModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center hidden" style="background:rgba(0,0,0,0.88);">
-    <div class="bg-black w-full max-w-lg rounded-t-[2rem] sm:rounded-[2rem] overflow-hidden flex flex-col shadow-2xl">
+  <div id="cameraModal" class="camera-modal fixed inset-0 z-50 flex items-center justify-center hidden" style="background:rgba(0,0,0,0.88);">
+    <div class="camera-dialog bg-black w-full max-w-lg rounded-[2rem] overflow-hidden flex flex-col shadow-2xl">
 
       <!-- Top bar -->
       <div class="flex items-center justify-between px-5 pt-5 pb-2">
@@ -369,14 +369,14 @@
       </div>
 
       <!-- Viewfinder area -->
-      <div class="relative bg-neutral-950 mx-3 rounded-2xl overflow-hidden" style="min-height:340px;">
+      <div class="camera-viewfinder relative bg-neutral-950 mx-3 rounded-2xl overflow-hidden">
         <!-- Live video -->
         <video id="cameraVideo" autoplay playsinline muted
-          class="w-full h-full object-cover" style="max-height:420px; display:block;"></video>
+          class="camera-media object-contain"></video>
 
         <!-- Preview canvas (hidden until snap) -->
         <canvas id="cameraCanvas"
-          class="absolute inset-0 w-full h-full object-cover hidden"></canvas>
+          class="camera-media object-contain hidden"></canvas>
 
         <!-- Corner bracket guides -->
         <div id="cameraGuide" class="absolute inset-5 pointer-events-none">

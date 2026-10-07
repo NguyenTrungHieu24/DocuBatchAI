@@ -857,6 +857,7 @@ document.addEventListener("DOMContentLoaded", init);
         audio: false
       });
       video.srcObject = cameraStream;
+      await video.play();
     } catch (err) {
       showToast("Không thể mở camera: " + err.message, "error");
       closeCamera();
@@ -900,6 +901,11 @@ document.addEventListener("DOMContentLoaded", init);
     }
 
     // ---- Chụp: lấy frame hiện tại ----
+    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
+      showToast("Camera chưa sẵn sàng, vui lòng đợi rồi thử lại.", "info");
+      return;
+    }
+
     // Shutter animation: thu nhỏ inner rồi phục hồi
     if (shutterInner) {
       shutterInner.style.transform = "scale(0.7)";
@@ -908,8 +914,8 @@ document.addEventListener("DOMContentLoaded", init);
 
     triggerFlash();
 
-    canvas.width  = video.videoWidth  || 1280;
-    canvas.height = video.videoHeight || 720;
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
