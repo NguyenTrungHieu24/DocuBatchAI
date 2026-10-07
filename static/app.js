@@ -815,6 +815,8 @@ document.addEventListener("DOMContentLoaded", init);
   const modal           = document.getElementById("cameraModal");
   const video           = document.getElementById("cameraVideo");
   const canvas          = document.getElementById("cameraCanvas");
+  const cameraStatus    = document.getElementById("cameraStatus");
+  const cameraStatusMessage = document.getElementById("cameraStatusMessage");
   const guide           = document.getElementById("cameraGuide");
   const flash           = document.getElementById("cameraFlash");
   const btnOpen         = document.getElementById("btnOpenCamera");
@@ -828,6 +830,42 @@ document.addEventListener("DOMContentLoaded", init);
   const btnConfirm      = document.getElementById("btnConfirmCapture");
   const btnConfirmWrap  = document.getElementById("btnConfirmWrap");
   const confirmSpacer   = document.getElementById("confirmSpacer");
+  const btnNativeCamera = document.getElementById("btnNativeCamera");
+  const nativeCameraInput = document.getElementById("nativeCameraInput");
+
+  function setCameraStatus(message, showNativeCamera = false) {
+    if (cameraStatusMessage) cameraStatusMessage.textContent = message;
+    if (cameraStatus) cameraStatus.classList.toggle("hidden", !message);
+    if (btnNativeCamera) btnNativeCamera.classList.toggle("hidden", !showNativeCamera);
+  }
+
+  function waitForCameraFrame() {
+    if (video.readyState >= 2 && video.videoWidth && video.videoHeight) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const cleanup = () => {
+        clearTimeout(timeout);
+        video.removeEventListener("loadeddata", checkFrame);
+        video.removeEventListener("playing", checkFrame);
+      };
+      const checkFrame = () => {
+        if (video.readyState >= 2 && video.videoWidth && video.videoHeight) {
+          cleanup();
+          resolve();
+        }
+      };
+      const timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error("Không nhận được hình ảnh từ camera sau vài giây."));
+      }, 6000);
+
+      video.addEventListener("loadeddata", checkFrame);
+      video.addEventListener("playing", checkFrame);
+      checkFrame();
+    });
+  }
 
   function setPostCaptureUI(captured) {
     // Retake group
@@ -850,17 +888,34 @@ document.addEventListener("DOMContentLoaded", init);
     canvas.classList.add("hidden");
     if (guide) guide.classList.remove("hidden");
     setPostCaptureUI(false);
+    setCameraStatus("Đang kết nối camera...");
 
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Trình duyệt không hỗ trợ camera trực tiếp. Hãy mở trang bằng Safari hoặc Chrome.");
+      }
+
       cameraStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
+        video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       });
       video.srcObject = cameraStream;
       await video.play();
+      await waitForCameraFrame();
+      setCameraStatus("");
     } catch (err) {
-      showToast("Không thể mở camera: " + err.message, "error");
-      closeCamera();
+      stopCamera();
+      const errorName = err && err.name;
+      let message = err instanceof Error ? err.message : "Không thể mở camera.";
+      if (errorName === "NotAllowedError" || errorName === "SecurityError") {
+        message = "Camera chưa được cấp quyền. Hãy cho phép truy cập camera trong cài đặt trình duyệt.";
+      } else if (errorName === "NotFoundError") {
+        message = "Không tìm thấy camera trên thiết bị này.";
+      } else if (errorName === "NotReadableError") {
+        message = "Camera đang được ứng dụng khác sử dụng. Hãy đóng ứng dụng đó rồi thử lại.";
+      }
+      setCameraStatus(message + " Bạn cũng có thể chụp bằng camera điện thoại.", true);
+      showToast(message, "error");
     }
   }
 
@@ -952,6 +1007,22 @@ document.addEventListener("DOMContentLoaded", init);
   if (btnRetake)  btnRetake.addEventListener("click", captureFrame); // same action = retake
   if (btnConfirm) btnConfirm.addEventListener("click", confirmCapture);
   if (btnSwitch)  btnSwitch.addEventListener("click", switchCamera);
+  if (btnNativeCamera && nativeCameraInput) {
+    btnNativeCamera.addEventListener("click", () => nativeCameraInput.click());
+    nativeCameraInput.addEventListener("change", () => {
+      const file = nativeCameraInput.files && nativeCameraInput.files[0];
+      if (!file) return;
+      if (!/\.(jpe?g|png|webp)$/i.test(file.name)) {
+        nativeCameraInput.value = "";
+        showToast("Ảnh từ camera cần ở định dạng JPG, PNG hoặc WEBP.", "error");
+        return;
+      }
+      handleFilesAdded([file]);
+      nativeCameraInput.value = "";
+      showToast("Đã thêm ảnh vào hàng chờ!", "success");
+      closeCamera();
+    });
+  }
 
   // Close on backdrop click
   if (modal) modal.addEventListener("click", (e) => {

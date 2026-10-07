@@ -59,6 +59,14 @@
   display: none;
 }
 
+.camera-status {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.camera-status.hidden {
+  display: none;
+}
+
 @supports (height: 1dvh) {
   .camera-viewfinder {
     height: min(55dvh, 420px);

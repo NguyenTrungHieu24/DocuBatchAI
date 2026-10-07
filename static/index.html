@@ -378,6 +378,10 @@
         <canvas id="cameraCanvas"
           class="camera-media object-contain hidden"></canvas>
 
+        <div id="cameraStatus" class="camera-status absolute inset-0 flex items-center justify-center p-6 text-center text-white" role="status">
+          <p id="cameraStatusMessage" class="max-w-xs text-sm">Đang kết nối camera...</p>
+        </div>
+
         <!-- Corner bracket guides -->
         <div id="cameraGuide" class="absolute inset-5 pointer-events-none">
           <div class="absolute top-0 left-0 w-9 h-9 border-t-[3px] border-l-[3px] border-white/70 rounded-tl-xl"></div>
@@ -395,6 +399,11 @@
           <i class="fa-solid fa-camera-rotate text-sm"></i>
         </button>
       </div>
+
+      <button id="btnNativeCamera" type="button" class="hidden mx-5 mb-1 py-2.5 px-4 rounded-xl border border-white/20 text-white/80 text-xs hover:bg-white/10 transition">
+        Chụp bằng camera điện thoại
+      </button>
+      <input id="nativeCameraInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
 
       <!-- Controls -->
       <div class="flex items-center justify-between px-10 py-7">
