@@ -36,6 +36,26 @@ const DEFAULT_TEMPLATES = {
       { id: "ky_nang_chinh", label: "Kỹ năng chính", description: "Kỹ năng chuyên môn nổi bật" }
     ]
   },
+
+  land_record: {
+  name: "🗺️ Thông tin thửa đất / BĐĐC",
+  fields: [
+    { id: "stt", label: "STT", description: "Số thứ tự" },
+    { id: "ten_chu_su_dung_dat_1", label: "Tên chủ sử dụng đất 1", description: "Họ và tên chủ sử dụng đất thứ nhất" },
+    { id: "cccd_1", label: "CCCD 1", description: "Số CCCD/CMND của chủ sử dụng đất 1" },
+    { id: "ten_chu_su_dung_dat_2", label: "Tên chủ sử dụng đất 2", description: "Họ và tên chủ sử dụng đất thứ hai" },
+    { id: "cccd_2", label: "CCCD 2", description: "Số CCCD/CMND của chủ sử dụng đất 2" },
+    { id: "dia_chi_thuong_tru", label: "Địa chỉ thường trú", description: "Địa chỉ thường trú của chủ sở hữu" },
+    { id: "so_hieu_to_bddc_2_cap", label: "Số hiệu tờ BĐĐC 2 cấp", description: "Số hiệu tờ bản đồ địa chính 2 cấp" },
+    { id: "so_thu_tu_thua_bddc_2_cap", label: "Số thứ tự thửa BĐĐC 2 cấp", description: "Số thứ tự thửa đất trên bản đồ địa chính 2 cấp" },
+    { id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất" },
+    { id: "muc_dich", label: "Mục đích", description: "Mục đích sử dụng đất" },
+    { id: "dia_chi_thua_dat", label: "Địa chỉ thửa đất", description: "Địa chỉ/Vị trí của thửa đất" },
+    { id: "thoi_han", label: "Thời hạn", description: "Thời hạn sử dụng đất" },
+    { id: "thoi_diem_su_dung", label: "Thời điểm sử dụng", description: "Thời điểm bắt đầu sử dụng đất" },
+    { id: "nguon_goc", label: "Nguồn gốc", description: "Nguồn gốc sử dụng đất" }
+  ]
+},
   order: {
     name: "📦 Đơn đặt hàng / Giao hàng",
     fields: [
@@ -46,6 +66,7 @@ const DEFAULT_TEMPLATES = {
       { id: "tong_gia_tri", label: "Tổng giá trị", description: "Tổng số tiền đơn hàng" }
     ]
   },
+
   custom: {
     name: "⚙️ Mẫu tùy chỉnh",
     fields: [
@@ -53,13 +74,42 @@ const DEFAULT_TEMPLATES = {
       { id: "ngay_thang", label: "Ngày tháng", description: "Ngày liên quan" },
       { id: "noi_dung_chinh", label: "Nội dung chính", description: "Tóm lược nội dung" }
     ]
-  }
+  },
 };
+
+const CUSTOM_SCHEMA_STORAGE_KEY = "docubatch_custom_schema";
+
+function loadCustomSchema() {
+  const fallback = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES.custom));
+  const stored = localStorage.getItem(CUSTOM_SCHEMA_STORAGE_KEY);
+  if (!stored) return fallback;
+
+  try {
+    const schema = JSON.parse(stored);
+    if (
+      typeof schema.name !== "string" ||
+      !Array.isArray(schema.fields) ||
+      !schema.fields.every(field =>
+        field &&
+        typeof field.id === "string" &&
+        typeof field.label === "string" &&
+        (field.description === undefined || typeof field.description === "string")
+      )
+    ) {
+      return fallback;
+    }
+    return schema;
+  } catch (error) {
+    console.warn("Không thể đọc biểu mẫu tùy chỉnh đã lưu.", error);
+    return fallback;
+  }
+}
 
 // Global Application State
 const state = {
   currentTemplateKey: "invoice",
   activeSchema: JSON.parse(JSON.stringify(DEFAULT_TEMPLATES.invoice)),
+  customSchema: loadCustomSchema(),
   fileQueue: [], // { id, file, status: 'queued'|'processing'|'completed'|'error', errorMsg, result }
   processedRecords: [], // array of completed records
   currentlyReviewingId: null,
@@ -100,6 +150,7 @@ const el = {
   // Schema Modal
   schemaModal: document.getElementById("schemaModal"),
   btnCloseSchemaModal: document.getElementById("btnCloseSchemaModal"),
+  schemaNameInput: document.getElementById("schemaNameInput"),
   schemaFieldsEditorList: document.getElementById("schemaFieldsEditorList"),
   btnAddFieldBtn: document.getElementById("btnAddFieldBtn"),
   btnSaveSchemaBtn: document.getElementById("btnSaveSchemaBtn"),
@@ -614,6 +665,7 @@ function openSchemaModal() {
 }
 
 function renderSchemaEditorList() {
+  if (el.schemaNameInput) el.schemaNameInput.value = state.activeSchema.name || "";
   el.schemaFieldsEditorList.innerHTML = "";
   state.activeSchema.fields.forEach((field, index) => {
     const row = document.createElement("div");
@@ -634,35 +686,60 @@ function renderSchemaEditorList() {
 }
 
 window.removeSchemaField = function(index) {
+  syncSchemaEditor();
   state.activeSchema.fields.splice(index, 1);
   renderSchemaEditorList();
 };
 
 function addSchemaField() {
+  syncSchemaEditor();
   const newIndex = state.activeSchema.fields.length + 1;
+  let fieldId = `truong_moi_${newIndex}`;
+  let suffix = newIndex;
+  while (state.activeSchema.fields.some(field => field.id === fieldId)) {
+    fieldId = `truong_moi_${++suffix}`;
+  }
   state.activeSchema.fields.push({
-    id: `truong_moi_${newIndex}`,
-    label: `Trường mới ${newIndex}`,
+    id: fieldId,
+    label: `Trường mới ${suffix}`,
     description: ""
   });
   renderSchemaEditorList();
 }
 
-function saveSchemaCustomization() {
+function syncSchemaEditor() {
+  if (el.schemaNameInput) state.activeSchema.name = el.schemaNameInput.value;
   const inputs = el.schemaFieldsEditorList.querySelectorAll("input[data-index]");
   inputs.forEach(input => {
-    const idx = parseInt(input.getAttribute("data-index"));
+    const idx = Number(input.getAttribute("data-index"));
     const prop = input.getAttribute("data-prop");
     if (state.activeSchema.fields[idx]) {
-      state.activeSchema.fields[idx][prop] = input.value.trim();
+      state.activeSchema.fields[idx][prop] = input.value;
       if (prop === "label" && !state.activeSchema.fields[idx].id) {
         state.activeSchema.fields[idx].id = "field_" + idx;
       }
     }
   });
+}
+
+function saveSchemaCustomization() {
+  syncSchemaEditor();
+  state.activeSchema.name = state.activeSchema.name.trim() || DEFAULT_TEMPLATES.custom.name;
+  state.activeSchema.fields.forEach(field => {
+    field.label = field.label.trim();
+    field.description = (field.description || "").trim();
+  });
 
   // Chuyển template select sang custom
   el.templateSelect.value = "custom";
+  state.currentTemplateKey = "custom";
+  state.customSchema = JSON.parse(JSON.stringify(state.activeSchema));
+  try {
+    localStorage.setItem(CUSTOM_SCHEMA_STORAGE_KEY, JSON.stringify(state.customSchema));
+  } catch (error) {
+    showToast("Không thể lưu biểu mẫu vào trình duyệt. Vui lòng kiểm tra dung lượng lưu trữ.", "error");
+    return;
+  }
   renderSchemaTags();
   renderTableHeader();
   el.schemaModal.classList.add("hidden");
@@ -729,7 +806,9 @@ function setupEventListeners() {
   el.templateSelect.addEventListener("change", (e) => {
     const key = e.target.value;
     state.currentTemplateKey = key;
-    state.activeSchema = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES[key]));
+    state.activeSchema = JSON.parse(JSON.stringify(
+      key === "custom" ? state.customSchema : DEFAULT_TEMPLATES[key]
+    ));
     renderSchemaTags();
     renderTableHeader();
   });
