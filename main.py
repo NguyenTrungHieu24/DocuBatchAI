@@ -131,7 +131,6 @@ async def extract_file(
                 "filename": filename
             }
         )
-
     return {
         "success": True,
         "file_id": safe_filename,
