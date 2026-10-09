@@ -28,12 +28,12 @@ const DEFAULT_TEMPLATES = {
   resume: {
     name: "📄 Hồ sơ ứng viên / CV",
     fields: [
-      { id: "ho_va_ten", label: "Họ và tên", description: "Tên ứng viên đầy đủ" },
-      { id: "vi_tri_ung_tuyen", label: "Vị trí ứng tuyển", description: "Chức danh hoặc vị trí mong muốn" },
-      { id: "so_dien_thoai", label: "Số điện thoại", description: "SĐT liên hệ" },
-      { id: "email", label: "Địa chỉ Email", description: "Email liên hệ" },
-      { id: "so_nam_kinh_nghiem", label: "Số năm kinh nghiệm", description: "Tổng số năm kinh nghiệm làm việc" },
-      { id: "ky_nang_chinh", label: "Kỹ năng chính", description: "Kỹ năng chuyên môn nổi bật" }
+      {id: "ho_va_ten", label: "Họ và tên", description: "Tên ứng viên đầy đủ"},
+      {id: "vi_tri_ung_tuyen", label: "Vị trí ứng tuyển", description: "Chức danh hoặc vị trí mong muốn"},
+      {id: "so_dien_thoai", label: "Số điện thoại", description: "SĐT liên hệ"},
+      {id: "email", label: "Địa chỉ Email", description: "Email liên hệ"},
+      {id: "so_nam_kinh_nghiem", label: "Số năm kinh nghiệm", description: "Tổng số năm kinh nghiệm làm việc"},
+      {id: "ky_nang_chinh", label: "Kỹ năng chính", description: "Kỹ năng chuyên môn nổi bật"}
     ]
   },
 
@@ -113,10 +113,12 @@ const state = {
   fileQueue: [], // { id, file, status: 'queued'|'processing'|'completed'|'error', errorMsg, result }
   processedRecords: [], // array of completed records
   currentlyReviewingId: null,
-  apiKey: localStorage.getItem("docubatch_api_key") || "",
+  apiKeyAvailable: null,
   model: localStorage.getItem("docubatch_model") || "auto",
   isProcessing: false
 };
+
+localStorage.removeItem("docubatch_api_key");
 
 // DOM Elements
 const el = {
@@ -142,7 +144,6 @@ const el = {
   btnOpenSettings: document.getElementById("btnOpenSettings"),
   btnCloseSettings: document.getElementById("btnCloseSettings"),
   btnSaveSettings: document.getElementById("btnSaveSettings"),
-  inputApiKey: document.getElementById("inputApiKey"),
   selectModel: document.getElementById("selectModel"),
   apiKeyIndicator: document.getElementById("apiKeyIndicator"),
   apiKeyText: document.getElementById("apiKeyText"),
@@ -173,20 +174,36 @@ const el = {
 };
 
 // ================= INITIALIZATION =================
-function init() {
+async function init() {
   updateApiKeyStatusUI();
   renderSchemaTags();
   renderTableHeader();
   setupEventListeners();
+  try {
+    const response = await fetch("/api/config");
+    if (!response.ok) throw new Error("Không thể kiểm tra cấu hình máy chủ.");
+    const config = await response.json();
+    if (typeof config.gemini_api_key_configured !== "boolean") {
+      throw new Error("Cấu hình máy chủ trả về dữ liệu không hợp lệ.");
+    }
+    state.apiKeyAvailable = config.gemini_api_key_configured;
+  } catch (error) {
+    console.error(error);
+    state.apiKeyAvailable = null;
+  }
+  updateApiKeyStatusUI();
 }
 
 function updateApiKeyStatusUI() {
-  if (state.apiKey && state.apiKey.trim().length > 10) {
+  if (state.apiKeyAvailable) {
     el.apiKeyIndicator.className = "w-2 h-2 rounded-full bg-emerald-500";
-    el.apiKeyText.innerText = "API Key đã sẵn sàng";
-  } else {
+    el.apiKeyText.innerText = "API Key máy chủ đã sẵn sàng";
+  } else if (state.apiKeyAvailable === false) {
     el.apiKeyIndicator.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
-    el.apiKeyText.innerText = "Chưa có API Key";
+    el.apiKeyText.innerText = "Chưa cấu hình API Key trên máy chủ";
+  } else {
+    el.apiKeyIndicator.className = "w-2 h-2 rounded-full bg-red-500";
+    el.apiKeyText.innerText = "Không kiểm tra được cấu hình máy chủ";
   }
 }
 
@@ -393,8 +410,11 @@ window.removeQueueItem = function(id) {
 
 // ================= BATCH PROCESSING =================
 async function startBatchExtraction() {
-  if (!state.apiKey) {
-    showToast("Vui lòng cấu hình Gemini API Key trước khi bắt đầu.", "warning");
+  if (!state.apiKeyAvailable) {
+    const message = state.apiKeyAvailable === false
+      ? "Hãy cấu hình GEMINI_API_KEY trong file .env trên máy chủ trước khi bắt đầu."
+      : "Không thể kiểm tra cấu hình máy chủ. Vui lòng tải lại trang.";
+    showToast(message, "warning");
     openSettingsModal();
     return;
   }
@@ -420,7 +440,6 @@ async function startBatchExtraction() {
       const formData = new FormData();
       formData.append("file", item.file);
       formData.append("schema_json", JSON.stringify(state.activeSchema));
-      formData.append("api_key", state.apiKey);
       formData.append("model", state.model || "auto");
 
       const res = await fetch("/api/extract", {
@@ -748,24 +767,19 @@ function saveSchemaCustomization() {
 
 // ================= SETTINGS =================
 function openSettingsModal() {
-  el.inputApiKey.value = state.apiKey;
   el.selectModel.value = state.model;
   el.settingsModal.classList.remove("hidden");
 }
 
 function saveSettings() {
-  const key = el.inputApiKey.value.trim();
   const model = el.selectModel.value;
 
-  state.apiKey = key;
   state.model = model;
 
-  localStorage.setItem("docubatch_api_key", key);
   localStorage.setItem("docubatch_model", model);
 
-  updateApiKeyStatusUI();
   el.settingsModal.classList.add("hidden");
-  showToast("Đã lưu cấu hình API Key!", "success");
+  showToast("Đã lưu cấu hình mô hình AI!", "success");
 }
 
 // ================= TOAST NOTIFICATION =================
@@ -1007,6 +1021,10 @@ document.addEventListener("DOMContentLoaded", init);
   }
 
   function openCamera() {
+    if (nativeCameraInput && window.matchMedia("(max-width: 640px)").matches) {
+      nativeCameraInput.click();
+      return;
+    }
     if (modal) modal.classList.remove("hidden");
     startCamera();
   }
@@ -1090,7 +1108,10 @@ document.addEventListener("DOMContentLoaded", init);
     btnNativeCamera.addEventListener("click", () => nativeCameraInput.click());
     nativeCameraInput.addEventListener("change", () => {
       const file = nativeCameraInput.files && nativeCameraInput.files[0];
-      if (!file) return;
+      if (!file) {
+        nativeCameraInput.value = "";
+        return;
+      }
       if (!/\.(jpe?g|png|webp)$/i.test(file.name)) {
         nativeCameraInput.value = "";
         showToast("Ảnh từ camera cần ở định dạng JPG, PNG hoặc WEBP.", "error");

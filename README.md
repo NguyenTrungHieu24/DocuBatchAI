@@ -19,7 +19,7 @@
 4. **Xuất bảng tính Excel chuyên nghiệp (.xlsx):**
    - Tự động sinh file Excel với tiêu đề, format chuẩn bảng biểu, căn chỉnh độ rộng cột và phân cách dòng rõ ràng.
    - Hỗ trợ xuất định dạng JSON.
-5. **Bảo mật & Cục bộ:** Tài liệu và API key được lưu trực tiếp trên máy của bạn.
+5. **Bảo mật:** Gemini API key chỉ được lưu trong file `.env` trên máy chủ; trình duyệt không nhận hoặc lưu key.
 
 ---
 
@@ -38,13 +38,17 @@ python run.py
 ### 3. Mở trình duyệt
 Truy cập địa chỉ: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
 
+### 4. Cấu hình Gemini API Key
+Sao chép `.env` thành `.env` ở thư mục gốc, sau đó thêm key:
+```env
+GEMINI_API_KEY=AIzaSy...
+```
+Khởi động lại ứng dụng sau khi sửa `.env`. Không commit hoặc chia sẻ file `.env`.
+
 ### Troubleshooting extraction
 
 Document extraction sends files to the Gemini API, so the machine running this app must have outbound internet access to `generativelanguage.googleapis.com`. If extraction reports `Cannot connect to the Gemini API`, check the network connection, firewall, VPN, or proxy settings. An API key alone is not enough when the API host is unreachable.
 
 ---
 
-## 🔑 Cấu Hình API Key
-1. Bấm vào nút **"Cấu hình API Key"** ở góc trên bên phải giao diện.
-2. Dán mã Gemini API Key của bạn (có thể tạo miễn phí tại [Google AI Studio](https://aistudio.google.com/app/apikey)).
-3. Bấm **"Lưu cấu hình"**.
+Tạo Gemini API Key tại [Google AI Studio](https://aistudio.google.com/app/apikey).
