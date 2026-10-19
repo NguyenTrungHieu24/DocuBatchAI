@@ -45,6 +45,10 @@ GEMINI_API_KEY=AIzaSy...
 ```
 Khởi động lại ứng dụng sau khi sửa `.env`. Không commit hoặc chia sẻ file `.env`.
 
+### Deploy trên Vercel
+
+Vercel dùng `api/index.py` làm entrypoint cho FastAPI. Trong Project Settings → Environment Variables, đặt `GEMINI_API_KEY`, sau đó redeploy để áp dụng. Tệp tải lên trên Vercel được lưu tạm trong `/tmp` và không được giữ lại lâu dài.
+
 ### Troubleshooting extraction
 
 Document extraction sends files to the Gemini API, so the machine running this app must have outbound internet access to `generativelanguage.googleapis.com`. If extraction reports `Cannot connect to the Gemini API`, check the network connection, firewall, VPN, or proxy settings. An API key alone is not enough when the API host is unreachable.

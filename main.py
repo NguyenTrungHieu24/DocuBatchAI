@@ -27,6 +27,9 @@ else:
     UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
     ENV_FILE = os.path.join(BASE_DIR, ".env")
 
+if os.environ.get("VERCEL"):
+    UPLOAD_DIR = os.path.join("/tmp", "docubatch-uploads")
+
 load_dotenv(ENV_FILE)
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
