@@ -1,61 +1,41 @@
 // DocuBatch - Frontend Application Logic
 
 const DEFAULT_TEMPLATES = {
-  invoice: {
-    name: "🧾 Hóa đơn / Chứng từ thanh toán",
-    fields: [
-      { id: "so_hoa_don", label: "Số hóa đơn", description: "Số ký hiệu hóa đơn hoặc chứng từ" },
-      { id: "ngay_lap", label: "Ngày lập", description: "Ngày tháng năm xuất hóa đơn (YYYY-MM-DD)" },
-      { id: "ben_ban", label: "Đơn vị bán hàng", description: "Tên công ty hoặc cá nhân bán" },
-      { id: "mst_ben_ban", label: "Mã số thuế bên bán", description: "Mã số thuế bên bán" },
-      { id: "ben_mua", label: "Khách hàng / Bên mua", description: "Tên đơn vị hoặc người mua hàng" },
-      { id: "mst_ben_mua", label: "MST bên mua", description: "Mã số thuế bên mua" },
-      { id: "tong_tien", label: "Tổng tiền thanh toán", description: "Tổng số tiền đã bao gồm thuế (dạng số)" },
-      { id: "thue_suat", label: "Thuế suất / Tiền thuế", description: "Tỷ lệ VAT hoặc số tiền thuế" }
-    ]
-  },
-  contract: {
-    name: "📑 Hợp đồng kinh tế / Thỏa thuận",
-    fields: [
-      { id: "so_hop_dong", label: "Số hợp đồng", description: "Số hiệu hoặc mã hợp đồng" },
-      { id: "ngay_ky", label: "Ngày ký", description: "Ngày có hiệu lực hoặc ngày ký" },
-      { id: "ben_a", label: "Bên A (Bên giao)", description: "Tên pháp nhân hoặc đại diện Bên A" },
-      { id: "ben_b", label: "Bên B (Bên nhận)", description: "Tên pháp nhân hoặc đại diện Bên B" },
-      { id: "gia_tri_hop_dong", label: "Giá trị hợp đồng", description: "Tổng giá trị tiền tệ của hợp đồng" },
-      { id: "thoi_han", label: "Thời hạn hợp đồng", description: "Thời gian thực hiện hoặc kết thúc hợp đồng" }
-    ]
-  },
-  resume: {
-    name: "📄 Hồ sơ ứng viên / CV",
-    fields: [
-      {id: "ho_va_ten", label: "Họ và tên", description: "Tên ứng viên đầy đủ"},
-      {id: "vi_tri_ung_tuyen", label: "Vị trí ứng tuyển", description: "Chức danh hoặc vị trí mong muốn"},
-      {id: "so_dien_thoai", label: "Số điện thoại", description: "SĐT liên hệ"},
-      {id: "email", label: "Địa chỉ Email", description: "Email liên hệ"},
-      {id: "so_nam_kinh_nghiem", label: "Số năm kinh nghiệm", description: "Tổng số năm kinh nghiệm làm việc"},
-      {id: "ky_nang_chinh", label: "Kỹ năng chính", description: "Kỹ năng chuyên môn nổi bật"}
-    ]
-  },
+
 
   land_record: {
-  name: "🗺️ Thông tin thửa đất / BĐĐC",
-  fields: [
-    { id: "stt", label: "STT", description: "Số thứ tự" },
-    { id: "ten_chu_su_dung_dat_1", label: "Tên chủ sử dụng đất 1", description: "Họ và tên chủ sử dụng đất thứ nhất" },
-    { id: "cccd_1", label: "CCCD 1", description: "Số CCCD/CMND của chủ sử dụng đất 1" },
-    { id: "ten_chu_su_dung_dat_2", label: "Tên chủ sử dụng đất 2", description: "Họ và tên chủ sử dụng đất thứ hai" },
-    { id: "cccd_2", label: "CCCD 2", description: "Số CCCD/CMND của chủ sử dụng đất 2" },
-    { id: "dia_chi_thuong_tru", label: "Địa chỉ thường trú", description: "Địa chỉ thường trú của chủ sở hữu" },
-    { id: "so_hieu_to_bddc_2_cap", label: "Số hiệu tờ BĐĐC 2 cấp", description: "Số hiệu tờ bản đồ địa chính 2 cấp" },
-    { id: "so_thu_tu_thua_bddc_2_cap", label: "Số thứ tự thửa BĐĐC 2 cấp", description: "Số thứ tự thửa đất trên bản đồ địa chính 2 cấp" },
-    { id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất" },
-    { id: "muc_dich", label: "Mục đích", description: "Mục đích sử dụng đất" },
-    { id: "dia_chi_thua_dat", label: "Địa chỉ thửa đất", description: "Địa chỉ/Vị trí của thửa đất" },
-    { id: "thoi_han", label: "Thời hạn", description: "Thời hạn sử dụng đất" },
-    { id: "thoi_diem_su_dung", label: "Thời điểm sử dụng", description: "Thời điểm bắt đầu sử dụng đất" },
-    { id: "nguon_goc", label: "Nguồn gốc", description: "Nguồn gốc sử dụng đất" }
-  ]
-},
+    name: "🗺️ Thông tin thửa đất / BĐĐC",
+    fields: [
+      {id: "stt", label: "STT", description: "Số thứ tự"},
+      {id: "ten_chu_su_dung_dat_1", label: "Tên chủ sử dụng đất 1", description: "Họ và tên chủ sử dụng đất thứ nhất"},
+      {id: "cccd_1", label: "CCCD 1", description: "Số CCCD/CMND của chủ sử dụng đất 1"},
+      {id: "ten_chu_su_dung_dat_2", label: "Tên chủ sử dụng đất 2", description: "Họ và tên chủ sử dụng đất thứ hai"},
+      {id: "cccd_2", label: "CCCD 2", description: "Số CCCD/CMND của chủ sử dụng đất 2"},
+      {id: "dia_chi_thuong_tru", label: "Địa chỉ thường trú", description: "Địa chỉ thường trú của chủ sở hữu"},
+      {id: "so_hieu_to_bddc_2_cap", label: "Số hiệu tờ BĐĐC 2 cấp", description: "Số hiệu tờ bản đồ địa chính 2 cấp"},
+      {
+        id: "so_thu_tu_thua_bddc_2_cap",
+        label: "Số thứ tự thửa BĐĐC 2 cấp",
+        description: "Số thứ tự thửa đất trên bản đồ địa chính 2 cấp"
+      },
+      {id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất"},
+      {id: "muc_dich", label: "Mục đích", description: "Mục đích sử dụng đất"},
+      {id: "dia_chi_thua_dat", label: "Địa chỉ thửa đất", description: "Địa chỉ/Vị trí của thửa đất"},
+      {id: "thoi_han", label: "Thời hạn", description: "Thời hạn sử dụng đất"},
+      {id: "thoi_diem_su_dung", label: "Thời điểm sử dụng", description: "Thời điểm bắt đầu sử dụng đất"},
+      {id: "nguon_goc", label: "Nguồn gốc", description: "Nguồn gốc sử dụng đất"}
+    ]
+  },
+  land_cover: {
+    name: "📕 Bìa giấy chứng nhận quyền sử dụng đất",
+    fields: [
+      { id: "ma_bia", label: "Mã Bìa", description: "Mã bìa hoặc mã hồ sơ in trên giấy chứng nhận; để trống nếu không thấy" },
+      { id: "to_so", label: "Tờ số", description: "Số hiệu tờ bản đồ địa chính" },
+      { id: "thua_dat", label: "Thửa đất", description: "Số thửa đất ghi trên giấy chứng nhận" },
+      { id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất, xóa đơn vị ghi trên giấy , đổi dấu phẩy thành dấu chấm giữa các số thập phân" },
+      { id: "muc_dich", label: "Mục Đích", description: "Mục đích sử dụng đất ghi trên giấy chứng nhận" }
+    ]
+  },
   order: {
     name: "📦 Đơn đặt hàng / Giao hàng",
     fields: [
@@ -107,8 +87,8 @@ function loadCustomSchema() {
 
 // Global Application State
 const state = {
-  currentTemplateKey: "invoice",
-  activeSchema: JSON.parse(JSON.stringify(DEFAULT_TEMPLATES.invoice)),
+  currentTemplateKey: "land_record",
+  activeSchema: JSON.parse(JSON.stringify(DEFAULT_TEMPLATES.land_record)),
   customSchema: loadCustomSchema(),
   fileQueue: [], // { id, file, status: 'queued'|'processing'|'completed'|'error', errorMsg, result }
   processedRecords: [], // array of completed records
@@ -196,12 +176,18 @@ async function init() {
 
 function updateApiKeyStatusUI() {
   if (state.apiKeyAvailable) {
+    document.getElementById("apiKeyLogo").classList.remove("hidden");
     el.apiKeyIndicator.className = "w-2 h-2 rounded-full bg-emerald-500";
-    el.apiKeyText.innerText = "API Key máy chủ đã sẵn sàng";
+    el.apiKeyIndicator.classList.add("hidden");
+    el.apiKeyText.innerText = "AI đã sẵn sàng";
   } else if (state.apiKeyAvailable === false) {
+    document.getElementById("apiKeyLogo").classList.add("hidden");
+    el.apiKeyIndicator.classList.remove("hidden");
     el.apiKeyIndicator.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
     el.apiKeyText.innerText = "Chưa cấu hình API Key trên máy chủ";
   } else {
+    document.getElementById("apiKeyLogo").classList.add("hidden");
+    el.apiKeyIndicator.classList.remove("hidden");
     el.apiKeyIndicator.className = "w-2 h-2 rounded-full bg-red-500";
     el.apiKeyText.innerText = "Không kiểm tra được cấu hình máy chủ";
   }
@@ -1131,4 +1117,287 @@ document.addEventListener("DOMContentLoaded", init);
 
   // Init spacers visible
   setPostCaptureUI(false);
+})();
+
+init();
+
+// ================= MOBILE QR CONNECT SYSTEM =================
+(function() {
+  const qrState = {
+    sessionId: null,
+    connectUrl: null,
+    appUrl: null,
+    currentMode: "scanner", // 'scanner' or 'full_app'
+    pollInterval: null,
+    qrCodeInstance: null,
+    isPhoneConnected: false,
+    totalFilesReceived: 0,
+    availableIps: [],
+    selectedIp: null,
+    port: 8000
+  };
+
+  const elements = {
+    modal: document.getElementById("mobileConnectModal"),
+    btnClose: document.getElementById("btnCloseMobileConnect"),
+    btnOpenHeader: document.getElementById("btnOpenMobileConnectHeader"),
+    btnOpenUpload: document.getElementById("btnOpenMobileConnectUpload"),
+    btnSwitchCamera: document.getElementById("btnSwitchToQrConnect"),
+    qrcodeBox: document.getElementById("qrcodeBox"),
+    qrLoading: document.getElementById("qrLoading"),
+    qrStatusText: document.getElementById("qrStatusText"),
+    qrConnectionStatus: document.getElementById("qrConnectionStatus"),
+    qrFilesReceivedBanner: document.getElementById("qrFilesReceivedBanner"),
+    qrFilesReceivedText: document.getElementById("qrFilesReceivedText"),
+    inputConnectUrl: document.getElementById("inputConnectUrl"),
+    btnCopyConnectUrl: document.getElementById("btnCopyConnectUrl"),
+    tabScanner: document.getElementById("tabModeScanner"),
+    tabFullApp: document.getElementById("tabModeFullApp"),
+    selectNetworkIp: document.getElementById("selectNetworkIp")
+  };
+
+  async function initSession() {
+    if (elements.qrLoading) elements.qrLoading.classList.remove("hidden");
+    try {
+      const res = await fetch("/api/connect/session/create", { method: "POST" });
+      if (!res.ok) throw new Error("Không thể khởi tạo phiên kết nối");
+      const data = await res.json();
+      qrState.sessionId = data.session_id;
+      qrState.connectUrl = data.connect_url;
+      qrState.appUrl = data.app_url;
+      qrState.availableIps = data.available_ips || [data.local_ip];
+      qrState.selectedIp = data.local_ip;
+      qrState.port = data.port || 8000;
+
+      setupIpSelector();
+      renderQrCode();
+      startPolling();
+    } catch (err) {
+      console.error("Init session error:", err);
+      showToast("Lỗi khởi tạo kết nối: " + err.message, "error");
+    } finally {
+      if (elements.qrLoading) elements.qrLoading.classList.add("hidden");
+    }
+  }
+
+  function setupIpSelector() {
+    if (!elements.selectNetworkIp) return;
+    if (qrState.availableIps && qrState.availableIps.length > 1) {
+      elements.selectNetworkIp.innerHTML = "";
+      qrState.availableIps.forEach(ip => {
+        const opt = document.createElement("option");
+        opt.value = ip;
+        opt.innerText = ip;
+        if (ip === qrState.selectedIp) opt.selected = true;
+        elements.selectNetworkIp.appendChild(opt);
+      });
+      elements.selectNetworkIp.classList.remove("hidden");
+    } else {
+      elements.selectNetworkIp.classList.add("hidden");
+    }
+  }
+
+  function getActiveUrl() {
+    const host = qrState.selectedIp || window.location.hostname;
+    const portStr = qrState.port ? `:${qrState.port}` : "";
+    if (qrState.currentMode === "scanner") {
+      return `http://${host}${portStr}/connect?session=${qrState.sessionId}`;
+    } else {
+      return `http://${host}${portStr}/`;
+    }
+  }
+
+  function renderQrCode() {
+    if (!elements.qrcodeBox) return;
+    const targetUrl = getActiveUrl();
+    if (elements.inputConnectUrl) elements.inputConnectUrl.value = targetUrl;
+
+    elements.qrcodeBox.innerHTML = "";
+    if (typeof QRCode !== "undefined") {
+      qrState.qrCodeInstance = new QRCode(elements.qrcodeBox, {
+        text: targetUrl,
+        width: 190,
+        height: 190,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } else {
+      elements.qrcodeBox.innerHTML = `
+        <div class="text-center p-4 text-xs text-slate-500">
+          <i class="fa-solid fa-link text-2xl text-brand-500 mb-2"></i>
+          <p class="font-semibold">Mở link trên điện thoại:</p>
+          <p class="font-mono mt-1 text-slate-800 break-all select-all">${targetUrl}</p>
+        </div>
+      `;
+    }
+  }
+
+  async function pollStatus() {
+    if (!qrState.sessionId) return;
+    try {
+      const res = await fetch(`/api/connect/session/${qrState.sessionId}/status`);
+      if (!res.ok) return;
+      const data = await res.json();
+
+      // Phone connection state
+      if (data.connected !== qrState.isPhoneConnected) {
+        qrState.isPhoneConnected = data.connected;
+        updateConnectionUI(data.connected);
+      }
+
+      // Check for incoming files
+      if (data.new_files && data.new_files.length > 0) {
+        await handleIncomingMobileFiles(data.new_files);
+      }
+
+      // Check for incoming actions
+      if (data.actions && data.actions.length > 0) {
+        data.actions.forEach(actionItem => {
+          if (actionItem.action === "start_extraction") {
+            showToast("Điện thoại vừa yêu cầu bắt đầu trích xuất AI!", "info");
+            startBatchExtraction();
+          }
+        });
+      }
+    } catch (e) {
+      // Ignore background network errors
+    }
+  }
+
+  function updateConnectionUI(connected) {
+    if (!elements.qrConnectionStatus || !elements.qrStatusText) return;
+    if (connected) {
+      elements.qrConnectionStatus.className = "mt-3.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-2";
+      elements.qrConnectionStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Điện thoại đã kết nối! Sẵn sàng nhận ảnh.</span>`;
+      showToast("🟢 Điện thoại đã kết nối thành công!", "success");
+    } else {
+      elements.qrConnectionStatus.className = "mt-3.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 flex items-center space-x-2";
+      elements.qrConnectionStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span><span>Đang đợi điện thoại quét mã...</span>`;
+    }
+  }
+
+  async function handleIncomingMobileFiles(files) {
+    const downloadedFiles = [];
+    let hasLandCover = false;
+    for (let f of files) {
+      try {
+        const res = await fetch(f.file_url);
+        if (!res.ok) continue;
+        const blob = await res.blob();
+        const fileObj = new File([blob], f.filename, { type: f.content_type || "image/jpeg" });
+        downloadedFiles.push(fileObj);
+        hasLandCover = hasLandCover || f.document_type === "land_cover";
+        qrState.totalFilesReceived++;
+      } catch (err) {
+        console.error("Error fetching file transferred from phone:", err);
+      }
+    }
+
+    if (downloadedFiles.length > 0) {
+      if (hasLandCover && el.templateSelect) {
+        el.templateSelect.value = "land_cover";
+        el.templateSelect.dispatchEvent(new Event("change"));
+      }
+      handleFilesAdded(downloadedFiles);
+      showToast(`📸 Đã nhận ${downloadedFiles.length} tài liệu từ điện thoại!`, "success");
+
+      // Update banner
+      if (elements.qrFilesReceivedBanner && elements.qrFilesReceivedText) {
+        elements.qrFilesReceivedBanner.classList.remove("hidden");
+        elements.qrFilesReceivedText.innerText = `Đã nhận ${qrState.totalFilesReceived} tài liệu từ điện thoại`;
+      }
+    }
+  }
+
+  function startPolling() {
+    stopPolling();
+    qrState.pollInterval = setInterval(pollStatus, 1500);
+  }
+
+  function stopPolling() {
+    if (qrState.pollInterval) {
+      clearInterval(qrState.pollInterval);
+      qrState.pollInterval = null;
+    }
+  }
+
+  function openModal() {
+    if (elements.modal) elements.modal.classList.remove("hidden");
+    if (!qrState.sessionId) {
+      initSession();
+    } else {
+      renderQrCode();
+      startPolling();
+    }
+  }
+
+  function closeModal() {
+    if (elements.modal) elements.modal.classList.add("hidden");
+    stopPolling();
+    // Continue checking in background every 3s if phone is connected
+    if (qrState.sessionId && qrState.isPhoneConnected) {
+      qrState.pollInterval = setInterval(pollStatus, 3000);
+    }
+  }
+
+  function switchMode(mode) {
+    qrState.currentMode = mode;
+    if (mode === "scanner") {
+      elements.tabScanner.className = "flex-1 py-1.5 rounded-lg bg-white text-brand-700 font-semibold shadow-sm transition";
+      elements.tabFullApp.className = "flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
+    } else {
+      elements.tabFullApp.className = "flex-1 py-1.5 rounded-lg bg-white text-brand-700 font-semibold shadow-sm transition";
+      elements.tabScanner.className = "flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition";
+    }
+    renderQrCode();
+  }
+
+  // Event Listeners
+  if (elements.btnOpenHeader) elements.btnOpenHeader.addEventListener("click", openModal);
+  if (elements.btnOpenUpload) elements.btnOpenUpload.addEventListener("click", openModal);
+  if (elements.btnClose) elements.btnClose.addEventListener("click", closeModal);
+  if (elements.btnSwitchCamera) {
+    elements.btnSwitchCamera.addEventListener("click", () => {
+      const cameraModal = document.getElementById("cameraModal");
+      if (cameraModal) cameraModal.classList.add("hidden");
+      const video = document.getElementById("cameraVideo");
+      if (video && video.srcObject) {
+        video.srcObject.getTracks().forEach(t => t.stop());
+        video.srcObject = null;
+      }
+      openModal();
+    });
+  }
+
+  if (elements.tabScanner) elements.tabScanner.addEventListener("click", () => switchMode("scanner"));
+  if (elements.tabFullApp) elements.tabFullApp.addEventListener("click", () => switchMode("full_app"));
+
+  if (elements.selectNetworkIp) {
+    elements.selectNetworkIp.addEventListener("change", (e) => {
+      qrState.selectedIp = e.target.value;
+      renderQrCode();
+    });
+  }
+
+  if (elements.btnCopyConnectUrl) {
+    elements.btnCopyConnectUrl.addEventListener("click", () => {
+      const url = getActiveUrl();
+      navigator.clipboard.writeText(url).then(() => {
+        showToast("Đã sao chép liên kết vào bộ nhớ tạm!", "success");
+      }).catch(() => {
+        if (elements.inputConnectUrl) {
+          elements.inputConnectUrl.select();
+          document.execCommand("copy");
+          showToast("Đã sao chép liên kết!", "success");
+        }
+      });
+    });
+  }
+
+  if (elements.modal) {
+    elements.modal.addEventListener("click", (e) => {
+      if (e.target === elements.modal) closeModal();
+    });
+  }
 })();

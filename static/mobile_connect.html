@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DocuBatch AI - Máy Quét Di Động</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/png" href="/static/logo.png">
+  <style>
+    /* Smooth touch interactions */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .active-scale:active {
+      transform: scale(0.97);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-slate-100 bg-slate-950 font-sans antialiased overflow-hidden">
+
+  <!-- Mobile Top Bar -->
+  <header class="bg-slate-900 border-b border-slate-800 px-4 py-3.5 flex items-center justify-between shrink-0 shadow-md">
+    <div class="flex items-center space-x-2.5">
+      <img src="/static/logo.png" alt="DocuBatch AI" class="w-8 h-8 object-contain">
+      <div>
+        <h1 class="text-sm font-bold text-white flex items-center">
+          Quét Tài Liệu <span class="text-brand-500 ml-1">AI Mobile</span>
+        </h1>
+        <p class="text-[11px] text-slate-400">Đồng bộ trực tiếp với máy tính</p>
+      </div>
+    </div>
+
+    <!-- Connection Status Badge -->
+    <div id="statusBadge" class="flex max-w-[48%] items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30 overflow-hidden whitespace-nowrap">
+      <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+      <span id="statusText" class="truncate">Đang kết nối...</span>
+    </div>
+  </header>
+
+  <!-- Main Scrollable Area -->
+  <main class="flex-1 overflow-y-auto px-4 py-4 space-y-4 custom-scroll">
+
+    <!-- Hero / Pairing Notice Card -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm">
+      <div class="flex items-start space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-mobile-screen-button text-lg"></i>
+        </div>
+        <div class="flex-1">
+          <h2 class="text-sm font-semibold text-white">Chụp &amp; Tải tài liệu lên máy tính</h2>
+          <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">
+            Chụp hóa đơn, hợp đồng bằng camera sắc nét của điện thoại. Ảnh sẽ được tự động gửi ngay sang máy tính để AI xử lý.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Primary Action Buttons -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      
+      <!-- Button 1: Chụp ảnh bằng camera điện thoại -->
+      <label class="active-scale cursor-pointer bg-gradient-to-br from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white rounded-2xl p-4 flex items-center space-x-3.5 shadow-lg shadow-brand-600/30 border border-brand-500/40 transition">
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+        <div class="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center text-white shrink-0">
+          <i class="fa-solid fa-camera text-2xl"></i>
+        </div>
+        <div class="flex-1">
+          <span class="block text-base font-bold">Chụp ảnh ngay</span>
+          <span class="block text-xs text-brand-100/80 mt-0.5">Mở camera góc rộng, tự động lấy nét</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-brand-200/60 text-sm"></i>
+      </label>
+
+      <!-- Button 2: Chọn từ thư viện hoặc file PDF -->
+      <label class="active-scale cursor-pointer bg-slate-800/90 hover:bg-slate-800 text-white rounded-2xl p-4 flex items-center space-x-3.5 border border-slate-700 shadow-md transition">
+        <input type="file" id="galleryInput" accept="image/*,application/pdf" multiple class="hidden">
+        <div class="w-12 h-12 rounded-xl bg-slate-700 flex items-center justify-center text-slate-300 shrink-0">
+          <i class="fa-solid fa-images text-xl"></i>
+        </div>
+        <div class="flex-1">
+          <span class="block text-base font-bold">Chọn tệp từ máy</span>
+          <span class="block text-xs text-slate-400 mt-0.5">Ảnh trong thư viện hoặc file PDF</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-500 text-sm"></i>
+      </label>
+    </div>
+
+    <section class="bg-indigo-950/60 border border-indigo-500/30 rounded-2xl p-4 space-y-3">
+      <div>
+        <h2 class="text-sm font-bold text-white">
+          <i class="fa-solid fa-book-open text-indigo-300 mr-1.5"></i> Chụp giấy tờ (2 mặt)
+        </h2>
+        <p id="coverCaptureStatus" class="text-xs text-indigo-200/80 mt-1">
+          Chụp lần lượt hai mặt của giấy tờ. Bìa đất sẽ tự chọn mẫu tương ứng; với giấy tờ khác, dùng mẫu đang chọn trên máy tính.
+        </p>
+      </div>
+      <label for="captureTemplateSelect" class="block text-xs font-medium text-indigo-100">Loại giấy tờ</label>
+      <select id="captureTemplateSelect" class="w-full rounded-lg border border-indigo-400/30 bg-slate-900 px-3 py-2 text-xs text-white">
+        <option value="land_cover">Bìa giấy chứng nhận quyền sử dụng đất</option>
+        <option value="current">Loại khác — dùng mẫu đang chọn trên máy tính</option>
+      </select>
+      <div id="coverPreview" class="hidden grid grid-cols-2 gap-2">
+        <div class="space-y-1">
+          <img id="coverFrontPreview" class="hidden w-full h-28 object-contain bg-slate-900 rounded-lg" alt="Mặt thứ nhất của giấy tờ">
+          <span class="block text-center text-[11px] text-slate-400">Mặt 1</span>
+        </div>
+        <div class="space-y-1">
+          <img id="coverBackPreview" class="hidden w-full h-28 object-contain bg-slate-900 rounded-lg" alt="Mặt thứ hai của giấy tờ">
+          <span class="block text-center text-[11px] text-slate-400">Mặt 2</span>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button id="btnCoverCapture" type="button" class="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold text-sm transition active-scale">
+          <i class="fa-solid fa-camera mr-1.5"></i> Chụp mặt 1
+        </button>
+        <button id="btnCancelCoverCapture" type="button" class="hidden px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-sm transition">
+          Hủy
+        </button>
+      </div>
+      <input type="file" id="coverCameraInput" accept="image/*" capture="environment" class="hidden">
+    </section>
+
+    <!-- Upload Progress / Quick Action Bar -->
+    <div id="quickActionBar" class="hidden bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-3.5 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="quickActionMsg" class="text-xs font-medium text-emerald-200">Đã gửi 0 tài liệu sang PC</span>
+      </div>
+      <button id="btnTriggerAiOnPc" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1.5 active-scale">
+        <i class="fa-solid fa-bolt"></i>
+        <span>Xử lý AI trên PC</span>
+      </button>
+    </div>
+
+    <!-- Transferred Files List Section -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex flex-col space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center">
+          <i class="fa-solid fa-list-check text-brand-500 mr-2"></i> Tài liệu đã chuyển sang PC
+        </h3>
+        <span id="transferredCount" class="text-xs font-semibold text-slate-500">0 tệp</span>
+      </div>
+
+      <!-- File cards list -->
+      <div id="transferredList" class="space-y-2.5">
+        <div id="emptyListState" class="py-8 text-center text-slate-500">
+          <i class="fa-regular fa-images text-3xl mb-2 text-slate-600"></i>
+          <p class="text-xs">Chưa có ảnh hoặc tài liệu nào được gửi.</p>
+          <p class="text-[11px] text-slate-600 mt-0.5">Bấm vào nút chụp ảnh phía trên để bắt đầu.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Link to full web app -->
+    <div class="pt-2 pb-6 text-center">
+      <a href="/" class="inline-flex items-center space-x-2 text-xs text-brand-400 hover:text-brand-300 transition py-2 px-3 rounded-lg hover:bg-slate-800/60">
+        <i class="fa-solid fa-desktop"></i>
+        <span>Mở toàn bộ giao diện DocuBatch trên điện thoại</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 left-4 right-4 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none z-50">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0"></i>
+    <p id="toastMsg" class="text-xs font-medium flex-1 truncate"></p>
+  </div>
+
+  <script>
+    // Extract session from URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get("session");
+
+    const el = {
+      statusBadge: document.getElementById("statusBadge"),
+      statusText: document.getElementById("statusText"),
+      cameraInput: document.getElementById("cameraInput"),
+      galleryInput: document.getElementById("galleryInput"),
+      coverCameraInput: document.getElementById("coverCameraInput"),
+      btnCoverCapture: document.getElementById("btnCoverCapture"),
+      btnCancelCoverCapture: document.getElementById("btnCancelCoverCapture"),
+      coverCaptureStatus: document.getElementById("coverCaptureStatus"),
+      captureTemplateSelect: document.getElementById("captureTemplateSelect"),
+      coverPreview: document.getElementById("coverPreview"),
+      coverFrontPreview: document.getElementById("coverFrontPreview"),
+      coverBackPreview: document.getElementById("coverBackPreview"),
+      quickActionBar: document.getElementById("quickActionBar"),
+      quickActionMsg: document.getElementById("quickActionMsg"),
+      btnTriggerAiOnPc: document.getElementById("btnTriggerAiOnPc"),
+      transferredList: document.getElementById("transferredList"),
+      transferredCount: document.getElementById("transferredCount"),
+      emptyListState: document.getElementById("emptyListState"),
+      toast: document.getElementById("toast"),
+      toastMsg: document.getElementById("toastMsg"),
+      toastIcon: document.getElementById("toastIcon")
+    };
+
+    let totalUploaded = 0;
+    let isConnected = false;
+    let sessionExpiredNotified = false;
+    let pingInterval = null;
+    let coverPhotos = [];
+    let coverPreviewUrls = [];
+
+    // Toast feedback
+    function showToast(message, type = "success") {
+      el.toastMsg.innerText = message;
+      if (type === "success") {
+        el.toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg shrink-0";
+      } else if (type === "error") {
+        el.toastIcon.className = "fa-solid fa-circle-xmark text-rose-400 text-lg shrink-0";
+      } else {
+        el.toastIcon.className = "fa-solid fa-circle-info text-blue-400 text-lg shrink-0";
+      }
+      el.toast.classList.remove("translate-y-24", "opacity-0");
+      setTimeout(() => {
+        el.toast.classList.add("translate-y-24", "opacity-0");
+      }, 3500);
+    }
+
+    function markSessionUnavailable() {
+      isConnected = false;
+      updateConnectionUI(false, "Phiên hết hạn — quét QR mới");
+      el.coverCaptureStatus.innerText = "Phiên kết nối hết hạn. Hãy quét mã QR mới trên máy tính.";
+      el.btnCoverCapture.disabled = true;
+      if (!sessionExpiredNotified) {
+        sessionExpiredNotified = true;
+        showToast("Phiên kết nối hết hạn. Hãy quét mã QR mới trên máy tính.", "error");
+      }
+    }
+
+    // Ping server to register phone connection
+    async function pingServer() {
+      if (!sessionId) {
+        markSessionUnavailable();
+        return;
+      }
+      try {
+        const userAgent = navigator.userAgent || "Mobile Device";
+        const res = await fetch(`/api/connect/session/${sessionId}/ping`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ client: "phone", info: userAgent })
+        });
+        const result = res.ok ? await res.json() : null;
+        if (result && result.ok === true) {
+          sessionExpiredNotified = false;
+          el.btnCoverCapture.disabled = false;
+          if (!isConnected) {
+            isConnected = true;
+            updateConnectionUI(true);
+          }
+        } else if (result && result.ok === false) {
+          markSessionUnavailable();
+        } else {
+          updateConnectionUI(false);
+        }
+      } catch (err) {
+        isConnected = false;
+        updateConnectionUI(false, "Mất kết nối máy tính. Kiểm tra Wi-Fi rồi thử lại.");
+      }
+    }
+
+    function updateConnectionUI(online, message = null) {
+      if (online) {
+        el.statusBadge.className = "flex max-w-[48%] items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 overflow-hidden whitespace-nowrap";
+        el.statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span><span class="truncate">Đã kết nối PC</span>`;
+        el.statusBadge.title = "Đã kết nối máy tính";
+      } else {
+        el.statusBadge.className = "flex max-w-[48%] items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/30 overflow-hidden whitespace-nowrap";
+        el.statusBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse shrink-0"></span><span class="truncate">${message || "Mất kết nối PC"}</span>`;
+        el.statusBadge.title = message || "Mất kết nối máy tính";
+      }
+    }
+
+    // Upload files handler
+    async function uploadFiles(files, documentType = null) {
+      if (!files || files.length === 0) return false;
+      if (!sessionId || !isConnected) {
+        markSessionUnavailable();
+        return false;
+      }
+      let allUploaded = true;
+      el.emptyListState?.classList.add("hidden");
+
+      for (let file of files) {
+        const tempId = "upload_" + Math.random().toString(36).substr(2, 9);
+        const card = createUploadCard(tempId, file);
+        el.transferredList.prepend(card);
+
+        // Upload to server
+        const formData = new FormData();
+        formData.append("file", file);
+        if (documentType) formData.append("document_type", documentType);
+
+        try {
+          const res = await fetch(`/api/connect/session/${sessionId}/upload`, {
+            method: "POST",
+            body: formData
+          });
+
+          if (!res.ok) {
+            if (res.status === 404) {
+              markSessionUnavailable();
+              throw new Error("Phiên kết nối hết hạn. Hãy quét mã QR mới trên máy tính.");
+            }
+            throw new Error(`Lỗi máy chủ (${res.status})`);
+          }
+
+          const result = await res.json();
+          if (result.success) {
+            totalUploaded++;
+            updateCardSuccess(tempId, result);
+            showToast(`Đã chuyển "${file.name}" sang máy tính!`, "success");
+          } else {
+            throw new Error(result.error || "Tải lên không thành công");
+          }
+        } catch (err) {
+          allUploaded = false;
+          updateCardError(tempId, err.message);
+          showToast(`Lỗi: ${err.message}`, "error");
+        }
+      }
+
+      el.transferredCount.innerText = `${totalUploaded} tệp`;
+      if (totalUploaded > 0) {
+        el.quickActionBar.classList.remove("hidden");
+        el.quickActionMsg.innerText = `Đã gửi ${totalUploaded} tài liệu sang PC`;
+      }
+      return allUploaded;
+    }
+
+    function resetCoverCapture() {
+      coverPreviewUrls.forEach(url => URL.revokeObjectURL(url));
+      coverPreviewUrls = [];
+      coverPhotos = [];
+      el.coverCameraInput.value = "";
+      el.coverPreview.classList.add("hidden");
+      el.coverFrontPreview.classList.add("hidden");
+      el.coverBackPreview.classList.add("hidden");
+      el.coverFrontPreview.removeAttribute("src");
+      el.coverBackPreview.removeAttribute("src");
+      el.coverCaptureStatus.innerText = "Chụp lần lượt hai mặt của giấy tờ. Hai ảnh sẽ được ghép thành một tài liệu; chọn mẫu trích xuất trên máy tính.";
+      el.btnCoverCapture.disabled = !sessionId || !isConnected;
+      el.btnCoverCapture.innerHTML = `<i class="fa-solid fa-camera mr-1.5"></i> Chụp mặt trước`;
+      el.btnCancelCoverCapture.disabled = false;
+      el.btnCancelCoverCapture.classList.add("hidden");
+    }
+
+    function showCoverPhoto(file, side) {
+      const url = URL.createObjectURL(file);
+      coverPreviewUrls.push(url);
+      const preview = side === 0 ? el.coverFrontPreview : el.coverBackPreview;
+      preview.src = url;
+      preview.classList.remove("hidden");
+      el.coverPreview.classList.remove("hidden");
+    }
+
+    async function createCombinedCoverImage(front, back) {
+      if (typeof createImageBitmap !== "function") {
+        throw new Error("Trình duyệt không hỗ trợ ghép ảnh. Hãy dùng Chrome hoặc Safari mới nhất.");
+      }
+      const bitmaps = [];
+      try {
+        bitmaps.push(await createImageBitmap(front));
+        bitmaps.push(await createImageBitmap(back));
+        const maxWidth = 1800;
+        const dimensions = bitmaps.map(image => {
+          const scale = Math.min(1, maxWidth / image.width);
+          return { width: Math.round(image.width * scale), height: Math.round(image.height * scale) };
+        });
+        const width = Math.max(...dimensions.map(size => size.width));
+        const gap = 32;
+        const height = dimensions.reduce((sum, size) => sum + size.height, 0) + gap;
+        if (width * height > 24000000) {
+          throw new Error("Ảnh quá lớn để ghép. Hãy chụp lại với độ phân giải thấp hơn.");
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("Không thể tạo ảnh ghép trên thiết bị này.");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, width, height);
+        let top = 0;
+        bitmaps.forEach((image, index) => {
+          const size = dimensions[index];
+          context.drawImage(image, (width - size.width) / 2, top, size.width, size.height);
+          top += size.height + (index === 0 ? gap : 0);
+        });
+        /** @type {Blob} */
+        const blob = await new Promise((resolve, reject) => {
+          canvas.toBlob(result => {
+            if (result) resolve(result);
+            else reject(new Error("Không thể tạo ảnh ghép. Vui lòng thử chụp lại."));
+          }, "image/jpeg", 0.92);
+        });
+        return new File([blob], `tai_lieu_2_mat_${Date.now()}.jpg`, { type: "image/jpeg" });
+      } finally {
+        bitmaps.forEach(image => image.close());
+      }
+    }
+
+    async function uploadCoverPair() {
+      if (coverPhotos.length !== 2) return;
+      el.btnCoverCapture.disabled = true;
+      el.btnCancelCoverCapture.disabled = true;
+      el.btnCoverCapture.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang ghép và gửi...`;
+      el.coverCaptureStatus.innerText = "Đang ghép hai mặt giấy tờ thành một ảnh...";
+      try {
+        const file = await createCombinedCoverImage(coverPhotos[0], coverPhotos[1]);
+        const documentType = el.captureTemplateSelect.value === "land_cover" ? "land_cover" : null;
+        const uploaded = await uploadFiles([file], documentType);
+        if (uploaded) {
+          resetCoverCapture();
+        } else {
+          el.btnCoverCapture.disabled = !isConnected;
+          el.btnCancelCoverCapture.disabled = false;
+          el.btnCoverCapture.innerHTML = `<i class="fa-solid fa-arrow-rotate-right mr-1.5"></i> Gửi lại 2 mặt`;
+          el.coverCaptureStatus.innerText = isConnected
+            ? "Chưa gửi được ảnh. Kiểm tra Wi-Fi rồi bấm gửi lại."
+            : "Phiên kết nối hết hạn. Hãy quét mã QR mới trên máy tính rồi chụp lại.";
+        }
+      } catch (error) {
+        el.btnCoverCapture.disabled = false;
+        el.btnCancelCoverCapture.disabled = false;
+        el.btnCoverCapture.innerHTML = `<i class="fa-solid fa-arrow-rotate-right mr-1.5"></i> Thử ghép lại`;
+        el.coverCaptureStatus.innerText = error.message;
+        showToast(error.message, "error");
+      }
+    }
+
+    function createUploadCard(id, file) {
+      const isPdf = file.name.toLowerCase().endsWith(".pdf");
+      const sizeStr = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+      const div = document.createElement("div");
+      div.id = id;
+      div.className = "bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between text-xs transition";
+      div.innerHTML = `
+        <div class="flex items-center space-x-3 min-w-0 pr-2">
+          <div class="w-9 h-9 rounded-lg bg-slate-700/80 flex items-center justify-center shrink-0">
+            <i class="fa-solid ${isPdf ? 'fa-file-pdf text-rose-400' : 'fa-file-image text-brand-400'} text-base"></i>
+          </div>
+          <div class="truncate">
+            <p class="font-semibold text-white truncate">${file.name}</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">${sizeStr}</p>
+          </div>
+        </div>
+        <div class="status-wrap shrink-0">
+          <span class="px-2 py-1 rounded-md text-[11px] font-medium bg-brand-500/10 text-brand-400 border border-brand-500/20 flex items-center">
+            <i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang gửi...
+          </span>
+        </div>
+      `;
+      return div;
+    }
+
+    function updateCardSuccess(id, result) {
+      const card = document.getElementById(id);
+      if (!card) return;
+      const statusWrap = card.querySelector(".status-wrap");
+      if (statusWrap) {
+        statusWrap.innerHTML = `
+          <span class="px-2 py-1 rounded-md text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center">
+            <i class="fa-solid fa-check mr-1.5"></i> Đã sang PC
+          </span>
+        `;
+      }
+    }
+
+    function updateCardError(id, errorMsg) {
+      const card = document.getElementById(id);
+      if (!card) return;
+      const statusWrap = card.querySelector(".status-wrap");
+      if (statusWrap) {
+        statusWrap.innerHTML = `
+          <span class="px-2 py-1 rounded-md text-[11px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center" title="${errorMsg}">
+            <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Thất bại
+          </span>
+        `;
+      }
+    }
+
+    // Trigger AI Extraction on PC from phone
+    el.btnTriggerAiOnPc.addEventListener("click", async () => {
+      try {
+        el.btnTriggerAiOnPc.disabled = true;
+        el.btnTriggerAiOnPc.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Đang gửi lệnh...</span>`;
+        const res = await fetch(`/api/connect/session/${sessionId}/action`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "start_extraction" })
+        });
+        if (res.ok) {
+          showToast("Đã gửi yêu cầu xử lý AI sang máy tính!", "success");
+        } else {
+          showToast("Không gửi được yêu cầu sang máy tính", "error");
+        }
+      } catch (err) {
+        showToast("Lỗi kết nối", "error");
+      } finally {
+        setTimeout(() => {
+          el.btnTriggerAiOnPc.disabled = false;
+          el.btnTriggerAiOnPc.innerHTML = `<i class="fa-solid fa-bolt"></i><span>Xử lý AI trên PC</span>`;
+        }, 2000);
+      }
+    });
+
+    // File input event listeners
+    el.cameraInput.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        uploadFiles(Array.from(e.target.files));
+        e.target.value = "";
+      }
+    });
+
+    el.galleryInput.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        uploadFiles(Array.from(e.target.files));
+        e.target.value = "";
+      }
+    });
+
+    el.btnCoverCapture.addEventListener("click", () => {
+      if (coverPhotos.length === 2) {
+        uploadCoverPair();
+      } else {
+        el.coverCameraInput.click();
+      }
+    });
+
+    el.coverCameraInput.addEventListener("change", () => {
+      const file = el.coverCameraInput.files && el.coverCameraInput.files[0];
+      el.coverCameraInput.value = "";
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        showToast("Vui lòng chụp hoặc chọn ảnh cho từng mặt giấy tờ.", "error");
+        return;
+      }
+      coverPhotos.push(file);
+      showCoverPhoto(file, coverPhotos.length - 1);
+      el.btnCancelCoverCapture.classList.remove("hidden");
+      if (coverPhotos.length === 1) {
+        el.coverCaptureStatus.innerText = "Đã chụp mặt 1. Tiếp tục chụp mặt 2.";
+        el.btnCoverCapture.innerHTML = `<i class="fa-solid fa-camera mr-1.5"></i> Chụp mặt 2`;
+      } else {
+        el.coverCaptureStatus.innerText = "Đã đủ hai mặt. Ghép và gửi lên máy tính để trích xuất.";
+        el.btnCoverCapture.innerHTML = `<i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Gửi tài liệu lên máy tính`;
+        uploadCoverPair();
+      }
+    });
+
+    el.btnCancelCoverCapture.addEventListener("click", resetCoverCapture);
+
+    // Initial ping and start interval
+    pingServer();
+    pingInterval = setInterval(pingServer, 4000);
+  </script>
+</body>
+</html>

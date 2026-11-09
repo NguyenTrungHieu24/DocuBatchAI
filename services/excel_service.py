@@ -30,20 +30,31 @@ def generate_excel_file(records: List[Dict[str, Any]], schema_fields: List[Dict[
     )
 
     # 1. Hàng tiêu đề chính
-    ws.merge_cells("A1:H1")
-    title_cell = ws["A1"]
-    title_cell.value = "BÁO CÁO TỔNG HỢP DỮ LIỆU TÀI LIỆU (DOCUBATCH AI)"
-    title_cell.font = Font(name="Segoe UI", size=14, bold=True, color="1E3A8A")
-    title_cell.alignment = Alignment(vertical="center")
-    ws.row_dimensions[1].height = 30
+
+   # ws.merge_cells("A1:H1")
+    #title_cell = ws["A1"]
+    #title_cell.value = "BÁO CÁO TỔNG HỢP DỮ LIỆU TÀI LIỆU (DOCUBATCH AI)"
+    #title_cell.font = Font(name="Segoe UI", size=14, bold=True, color="1E3A8A")
+    #title_cell.alignment = Alignment(vertical="center")
+    #ws.row_dimensions[1].height = 30
 
     # 2. Hàng Header cột
-    headers = ["STT", "Tên tệp gốc"] + [f.get("label", f.get("id")) for f in schema_fields] + ["Tóm tắt AI", "Trạng thái đối soát"]
-    ws.append([]) # Dòng 2 để trống
-    ws.append(headers) # Dòng 3 là Header
-    ws.row_dimensions[3].height = 28
+    is_land_cover = [field.get("id") for field in schema_fields] == [
+        "ma_bia", "to_so", "thua_dat", "dien_tich", "muc_dich"
+    ]
+    if is_land_cover:
+        ws.title = "Bìa đất"
+    headers = (
+        [field.get("label", field.get("id")) for field in schema_fields]
+        if is_land_cover
+        else ["STT", "Tên tệp gốc"] + [f.get("label", f.get("id")) for f in schema_fields] + ["Tóm tắt AI", "Trạng thái đối soát"]
+    )
+    header_row_idx = 1 if is_land_cover else 3
+    if not is_land_cover:
+        ws.append([])
+    ws.append(headers)
+    ws.row_dimensions[header_row_idx].height = 28
 
-    header_row_idx = 3
     for col_idx in range(1, len(headers) + 1):
         cell = ws.cell(row=header_row_idx, column=col_idx)
         cell.font = header_font
@@ -63,14 +74,20 @@ def generate_excel_file(records: List[Dict[str, Any]], schema_fields: List[Dict[
         summary = extracted.get("_ai_summary", "")
         verified = "Đã đối soát" if item.get("verified", False) else "Chưa đối soát"
 
-        row_values = [i, filename]
-        for field in schema_fields:
-            fid = field.get("id")
-            val = extracted.get(fid, "")
-            row_values.append(str(val) if val is not None else "")
+        if is_land_cover:
+            row_values = [
+                str(extracted.get(field.get("id"), "") or "")
+                for field in schema_fields
+            ]
+        else:
+            row_values = [i, filename]
+            for field in schema_fields:
+                fid = field.get("id")
+                val = extracted.get(fid, "")
+                row_values.append(str(val) if val is not None else "")
 
-        row_values.append(summary)
-        row_values.append(verified)
+            row_values.append(summary)
+            row_values.append(verified)
 
         ws.append(row_values)
 
@@ -94,7 +111,7 @@ def generate_excel_file(records: List[Dict[str, Any]], schema_fields: List[Dict[
         max_len = 0
         col_letter = get_column_letter(col[0].column)
         for cell in col:
-            if cell.row < 3:
+            if cell.row < header_row_idx:
                 continue
             if cell.value:
                 # Ước lượng chiều dài

@@ -29,6 +29,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="icon" type="image/png" href="/static/logo.png">
   <link rel="stylesheet" href="/static/styles.css">
+  <!-- QRCode.js Library -->
+  <script src="/static/qrcode.min.js"></script>
 </head>
 <body class="h-full flex flex-col text-slate-800 antialiased font-sans">
 
@@ -49,8 +51,16 @@
       </div>
 
       <div class="flex items-center space-x-3">
+        <!-- Connect Phone QR Button -->
+        <button id="btnOpenMobileConnectHeader" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 transition font-medium text-xs shadow-sm">
+          <i class="fa-solid fa-qrcode text-brand-600"></i>
+          <span class="hidden sm:inline">Kết nối điện thoại</span>
+          <span class="sm:hidden">QR</span>
+        </button>
+
         <!-- Server API Key Status Badge -->
         <button id="btnOpenSettings" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium hover:bg-slate-50 transition">
+          <i id="apiKeyLogo" class="fa-solid fa-robot text-brand-600 hidden" aria-label="AI sẵn sàng"></i>
           <span id="apiKeyIndicator" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span id="apiKeyText" class="text-slate-600">Đang kiểm tra API Key máy chủ...</span>
           <i class="fa-solid fa-gear text-slate-400 ml-1"></i>
@@ -75,12 +85,12 @@
         <div class="flex items-center space-x-2">
           <label for="templateSelect" class="text-xs font-medium text-slate-600 whitespace-nowrap">Mẫu có sẵn:</label>
           <select id="templateSelect" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2">
-            <option value="invoice">🧾 Hóa đơn / Chứng từ thanh toán</option>
-            <option value="contract">📑 Hợp đồng kinh tế / Thỏa thuận</option>
-            <option value="resume">📄 Hồ sơ ứng viên / CV</option>
+
             <option value="land_record">🗺️ Thông tin thửa đất / BĐĐC</option>
+            <option value="land_cover">📕 Bìa giấy chứng nhận quyền sử dụng đất</option>
             <option value="order">📦 Đơn đặt hàng / Phiếu giao hàng</option>
             <option value="custom">⚙️ Tùy chỉnh (Tự tạo trường)</option>
+
           </select>
           <button id="btnOpenSchemaModal" class="px-3 py-2 text-xs font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition flex items-center space-x-1">
             <i class="fa-solid fa-sliders"></i>
@@ -94,7 +104,7 @@
         <!-- Rendered by JS -->
       </div>
     </div>
-
+x
     <!-- Section 2: Upload Zone & Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
@@ -118,6 +128,12 @@
         <button id="btnOpenCamera" class="mt-3 w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-medium text-sm flex items-center justify-center space-x-2 transition shadow-sm">
           <i class="fa-solid fa-camera text-white"></i>
           <span>Chụp ảnh từ Camera</span>
+        </button>
+
+        <!-- Connect Phone QR Button -->
+        <button id="btnOpenMobileConnectUpload" class="mt-2 w-full py-2.5 px-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-brand-700 border border-brand-200/80 rounded-xl font-medium text-sm flex items-center justify-center space-x-2 transition shadow-sm">
+          <i class="fa-solid fa-qrcode text-brand-600"></i>
+          <span>Quét mã QR kết nối điện thoại</span>
         </button>
 
         <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
@@ -400,6 +416,12 @@
       </button>
       <input id="nativeCameraInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
 
+      <!-- Switch to QR Connect helper button inside camera modal -->
+      <button id="btnSwitchToQrConnect" type="button" class="mx-5 my-1 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-white/90 text-xs flex items-center justify-center space-x-2 transition border border-white/10">
+        <i class="fa-solid fa-qrcode text-brand-400"></i>
+        <span>Camera máy tính mờ? Dùng điện thoại chụp (Quét mã QR)</span>
+      </button>
+
       <!-- Controls -->
       <div class="camera-controls flex items-center justify-between px-10 py-7">
 
@@ -437,6 +459,93 @@
         <div id="confirmSpacer" class="w-[52px]"></div>
 
       </div>
+    </div>
+  </div>
+
+  <!-- ================= MOBILE CONNECT QR MODAL ================= -->
+  <div id="mobileConnectModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 flex flex-col relative overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-100">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 text-lg shadow-sm">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Quét mã QR kết nối điện thoại</h3>
+            <p class="text-xs text-slate-500">Chụp tài liệu từ điện thoại &amp; đồng bộ tự động lên máy tính</p>
+          </div>
+        </div>
+        <button id="btnCloseMobileConnect" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Mode Selector -->
+      <div class="mt-4 flex rounded-xl bg-slate-100 p-1 text-xs font-medium">
+        <button id="tabModeScanner" class="flex-1 py-1.5 rounded-lg bg-white text-brand-700 font-semibold shadow-sm transition">
+          <i class="fa-solid fa-camera mr-1"></i> Quét &amp; gửi tài liệu
+        </button>
+        <button id="tabModeFullApp" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+          <i class="fa-solid fa-desktop mr-1"></i> Mở toàn bộ app
+        </button>
+      </div>
+
+      <!-- QR Code Display Area -->
+      <div class="mt-4 flex flex-col items-center">
+        <!-- QR Code Container Box -->
+        <div class="p-3 bg-white rounded-2xl border-2 border-slate-200/90 shadow-sm flex items-center justify-center relative min-w-[210px] min-h-[210px]">
+          <div id="qrcodeBox" class="flex items-center justify-center"></div>
+          <div id="qrLoading" class="absolute inset-0 flex items-center justify-center bg-white/90 rounded-2xl hidden">
+            <i class="fa-solid fa-spinner fa-spin text-brand-600 text-2xl"></i>
+          </div>
+        </div>
+
+        <!-- Connection Status Pill -->
+        <div id="qrConnectionStatus" class="mt-3.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span id="qrStatusText">Đang đợi điện thoại quét mã...</span>
+        </div>
+
+        <!-- Transferred counter banner -->
+        <div id="qrFilesReceivedBanner" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl border border-emerald-200 flex items-center space-x-1.5 hidden animate-bounce">
+          <i class="fa-solid fa-circle-check text-emerald-600"></i>
+          <span id="qrFilesReceivedText">Đã nhận 0 tài liệu từ điện thoại</span>
+        </div>
+      </div>
+
+      <!-- Quick Steps -->
+      <div class="mt-3.5 bg-slate-50 border border-slate-200/70 rounded-2xl p-3 space-y-1.5 text-[11px] text-slate-600">
+        <div class="flex items-start space-x-2">
+          <span class="w-4 h-4 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">1</span>
+          <span>Điện thoại và máy tính phải <b>cùng kết nối 1 mạng Wi-Fi</b>.</span>
+        </div>
+        <div class="flex items-start space-x-2">
+          <span class="w-4 h-4 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">2</span>
+          <span>Mở <b>Camera</b> điện thoại hoặc <b>Zalo</b> quét mã QR phía trên.</span>
+        </div>
+        <div class="flex items-start space-x-2">
+          <span class="w-4 h-4 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">3</span>
+          <span>Chụp ảnh hóa đơn/tài liệu, ảnh sẽ tự động hiện ngay trên máy tính!</span>
+        </div>
+      </div>
+
+      <!-- URL link & IP Selector -->
+      <div class="mt-3 pt-3 border-t border-slate-100">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
+          <span>Hoặc mở trực tiếp link:</span>
+          <button id="btnCopyConnectUrl" class="text-brand-600 hover:underline flex items-center space-x-1 font-medium">
+            <i class="fa-solid fa-copy"></i>
+            <span>Sao chép</span>
+          </button>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <input type="text" id="inputConnectUrl" readonly class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-[11px] font-mono text-slate-700 select-all">
+          <select id="selectNetworkIp" class="bg-white border border-slate-300 text-slate-700 text-[11px] rounded-lg px-2 py-1 hidden" title="Đổi IP mạng nếu cần"></select>
+        </div>
+      </div>
+
     </div>
   </div>
 

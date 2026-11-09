@@ -1,16 +1,22 @@
 # DocuBatch AI - Trợ lý Xử lý & Trích xuất Đa Tài Liệu Hàng Loạt
 
-Ứng dụng hỗ trợ đọc, bóc tách và chuẩn hóa thông tin từ hàng loạt tài liệu (Hóa đơn, Hợp đồng, CV, Đơn hàng, Chứng từ,...) bằng sức mạnh Multimodal của **Gemini 2.5 Flash / 1.5 Flash**.
+Ứng dụng hỗ trợ đọc, bóc tách và chuẩn hóa thông tin từ hàng loạt tài liệu bằng sức mạnh Multimodal của **Gemini 2.5 Flash / 1.5 Flash**.
 
 ---
+
+## Cấu trúc thư mục
+
+- `main.py`, `run.py`: ứng dụng FastAPI và lệnh chạy local.
+- `api/`, `services/`, `static/`: API deploy, xử lý nghiệp vụ và giao diện web.
+- `packaging/`: cấu hình PyInstaller để tạo bản EXE.
+- `uploads/`: tài liệu người dùng; không xóa khi dọn mã nguồn.
+- `build/`, `dist/`: thư mục PyInstaller tự tạo khi đóng gói, không chỉnh sửa thủ công.
+- `.env`, `.venv/`: cấu hình API key và môi trường Python local; không chia sẻ/commit.
 
 ## 🌟 Tính Năng Nổi Bật
 
 1. **Kéo thả hàng loạt (Batch Drop):** Tải lên cùng lúc nhiều tệp PDF, ảnh chụp hóa đơn (PNG, JPG, WEBP).
 2. **Tùy biến trường trích xuất (Flexible Schema):** 
-   - Hóa đơn / Chứng từ thanh toán.
-   - Hợp đồng kinh tế / Thỏa thuận.
-   - Hồ sơ ứng viên / CV.
    - Đơn đặt hàng / Giao hàng.
    - *Tùy chỉnh:* Thêm/bớt/đổi tên các trường bất kỳ theo nhu cầu nghiệp vụ của bạn.
 3. **Màn hình Đối soát song song (Split-Screen Review):**
@@ -19,7 +25,12 @@
 4. **Xuất bảng tính Excel chuyên nghiệp (.xlsx):**
    - Tự động sinh file Excel với tiêu đề, format chuẩn bảng biểu, căn chỉnh độ rộng cột và phân cách dòng rõ ràng.
    - Hỗ trợ xuất định dạng JSON.
-5. **Bảo mật:** Gemini API key chỉ được lưu trong file `.env` trên máy chủ; trình duyệt không nhận hoặc lưu key.
+5. **Quét mã QR kết nối điện thoại (Mobile Scanner):**
+   - Quét mã QR trên màn hình bằng camera điện thoại hoặc Zalo (cùng mạng Wi-Fi).
+   - Chụp ảnh hóa đơn, chứng từ trực tiếp bằng camera độ nét cao của điện thoại hoặc chọn nhiều ảnh/PDF từ máy.
+   - Tài liệu tự động chuyển thẳng sang danh sách xử lý trên màn hình máy tính trong tích tắc.
+   - Chụp hai mặt của nhiều loại giấy tờ bằng điện thoại; ứng dụng ghép ảnh thành một tài liệu. Bìa giấy chứng nhận tự chọn mẫu riêng, các loại khác dùng mẫu đang chọn trên máy tính.
+6. **Bảo mật:** Gemini API key chỉ được lưu trong file `.env` trên máy chủ; trình duyệt không nhận hoặc lưu key.
 
 ---
 
