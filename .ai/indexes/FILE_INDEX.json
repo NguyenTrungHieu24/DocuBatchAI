@@ -1,0 +1,342 @@
+{
+  "generated_at": "2026-11-17T10:41:00Z",
+  "total_files": 48,
+  "files": [
+    {
+      "path": ".ai/README.md",
+      "size_bytes": 581,
+      "extension": ".md",
+      "sha256": "a101cc4db5a295a0d301c62d97a725b6053a36abeb8c498c1b7730660c006741",
+      "role_summary": "AI skill or configuration file: README.md"
+    },
+    {
+      "path": ".ai/SKILL.md",
+      "size_bytes": 5132,
+      "extension": ".md",
+      "sha256": "559a4ee0e682297e52003d9b1c595c387934c39d2da82d8cbe923892132ca1e4",
+      "role_summary": "AI skill or configuration file: SKILL.md"
+    },
+    {
+      "path": ".ai/indexes/README.md",
+      "size_bytes": 718,
+      "extension": ".md",
+      "sha256": "38c50b1c2f5ab05cb3d82f32436eb347e6300376718d0bf1c247874b4b0e184c",
+      "role_summary": "Repository index artifact: README.md"
+    },
+    {
+      "path": ".ai/memory/AI_PIPELINE.md",
+      "size_bytes": 1451,
+      "extension": ".md",
+      "sha256": "e4b2f5e6d097bb66436724e29e8d64e7e3b99cf30e7333843f994cc2e9659d5f",
+      "role_summary": "Project intelligence persistent memory document: AI_PIPELINE.md"
+    },
+    {
+      "path": ".ai/memory/API_DOCUMENTATION.md",
+      "size_bytes": 959,
+      "extension": ".md",
+      "sha256": "3f178e909a6da272286b75c71d5b3a7e2f72234a0b6650e384c4b34469e1b607",
+      "role_summary": "Project intelligence persistent memory document: API_DOCUMENTATION.md"
+    },
+    {
+      "path": ".ai/memory/ARCHITECTURE.md",
+      "size_bytes": 1205,
+      "extension": ".md",
+      "sha256": "414773895146b74ea754d3feacd8702dde0931e83484f8af5571b704530ec2c8",
+      "role_summary": "Project intelligence persistent memory document: ARCHITECTURE.md"
+    },
+    {
+      "path": ".ai/memory/CODING_RULES.md",
+      "size_bytes": 924,
+      "extension": ".md",
+      "sha256": "2b46b15d35afd63caa5c79f0b9c9585004e01447914f1c842afdbcc183783af4",
+      "role_summary": "Project intelligence persistent memory document: CODING_RULES.md"
+    },
+    {
+      "path": ".ai/memory/CURRENT_TASK.md",
+      "size_bytes": 962,
+      "extension": ".md",
+      "sha256": "74edbfacc88b6f13423e13765088134b210d8d837f6c0d9e632d51356de9318a",
+      "role_summary": "Project intelligence persistent memory document: CURRENT_TASK.md"
+    },
+    {
+      "path": ".ai/memory/DECISIONS.md",
+      "size_bytes": 571,
+      "extension": ".md",
+      "sha256": "98cc17b86ee8b77552163f0a469d765ef618be859790e8c2274b8c011e63bd0e",
+      "role_summary": "Project intelligence persistent memory document: DECISIONS.md"
+    },
+    {
+      "path": ".ai/memory/PROJECT_CONTEXT.md",
+      "size_bytes": 1535,
+      "extension": ".md",
+      "sha256": "2ce452220ed1fc8c843eaa54a35e399d880ce0b5b8a2009de3bdca59adf1b7b2",
+      "role_summary": "Project intelligence persistent memory document: PROJECT_CONTEXT.md"
+    },
+    {
+      "path": ".ai/rules/CODE_OPTIMIZATION.md",
+      "size_bytes": 604,
+      "extension": ".md",
+      "sha256": "867fd84580927665d5928b9bd8dbd6b3a4aed26b981cb5d78229b97349f5b960",
+      "role_summary": "Development, security, or optimization rule: CODE_OPTIMIZATION.md"
+    },
+    {
+      "path": ".ai/rules/SECURITY.md",
+      "size_bytes": 861,
+      "extension": ".md",
+      "sha256": "13fa85c4cfb0ef57b33d139ea5ab7bd7640975b1087eeb74a2548cd1ab350abc",
+      "role_summary": "Development, security, or optimization rule: SECURITY.md"
+    },
+    {
+      "path": ".ai/rules/TESTING.md",
+      "size_bytes": 695,
+      "extension": ".md",
+      "sha256": "94497ab8f34a217f40f56c5bf34c07185f8cc14aa0212cc4b145fafc9279a53c",
+      "role_summary": "Development, security, or optimization rule: TESTING.md"
+    },
+    {
+      "path": ".ai/rules/TOKEN_OPTIMIZATION.md",
+      "size_bytes": 881,
+      "extension": ".md",
+      "sha256": "bdc38286f28b528b44ab0c12f3d2a23d209604fb80d51a8c20256133490e3429",
+      "role_summary": "Development, security, or optimization rule: TOKEN_OPTIMIZATION.md"
+    },
+    {
+      "path": ".aiignore",
+      "size_bytes": 207,
+      "extension": "",
+      "sha256": "83d2143a9d56ef260e0fb13081e46ff7539e84f4349e26b51cdb024b3be8f674",
+      "role_summary": "Exclusion rules for AI context indexing"
+    },
+    {
+      "path": ".gitignore",
+      "size_bytes": 266,
+      "extension": "",
+      "sha256": "c1d8849594bfbfd1cfe3ae5534b8ebfa7b62def6cca361f13c1f65c0b6e03b65",
+      "role_summary": "Git version control ignore rules"
+    },
+    {
+      "path": ".idea/.gitignore",
+      "size_bytes": 238,
+      "extension": "",
+      "sha256": "4d4bf7821823e4011771702449065544347784ecf4cbde265125a36c0d8e31b0",
+      "role_summary": "PyCharm IDE configuration file: .gitignore"
+    },
+    {
+      "path": ".idea/Vibe_code_quét_tài liệu.iml",
+      "size_bytes": 533,
+      "extension": ".iml",
+      "sha256": "b23d9594c002d730f7c02c4d33d93edad6749f1b2982c5c43be527c49d7a61cb",
+      "role_summary": "PyCharm IDE configuration file: Vibe_code_quét_tài liệu.iml"
+    },
+    {
+      "path": ".idea/inspectionProfiles/profiles_settings.xml",
+      "size_bytes": 174,
+      "extension": ".xml",
+      "sha256": "6172c5997eeb3cd19c9ca2b5b97d6e2983cdd1fa60b2460d7bbb74055edcaa46",
+      "role_summary": "PyCharm IDE configuration file: profiles_settings.xml"
+    },
+    {
+      "path": ".idea/jsonSchemas.xml",
+      "size_bytes": 820,
+      "extension": ".xml",
+      "sha256": "78074fc515cb6a94469bb5c9fa3a4268a3df621a56e8a63809a886941fa4b65c",
+      "role_summary": "PyCharm IDE configuration file: jsonSchemas.xml"
+    },
+    {
+      "path": ".idea/misc.xml",
+      "size_bytes": 219,
+      "extension": ".xml",
+      "sha256": "793b01bdd34e0ccd0ba2adfb6b2684d88da163b3a6fa668c14034e119ac71aff",
+      "role_summary": "PyCharm IDE configuration file: misc.xml"
+    },
+    {
+      "path": ".idea/modules.xml",
+      "size_bytes": 313,
+      "extension": ".xml",
+      "sha256": "aec164709101f8fc3aaefbb2fd515c21d451ea1b6043ac5d016e3e80b37a138c",
+      "role_summary": "PyCharm IDE configuration file: modules.xml"
+    },
+    {
+      "path": ".idea/vcs.xml",
+      "size_bytes": 185,
+      "extension": ".xml",
+      "sha256": "136f8b0a20e3e16f5b60e8505219c34746e1ec62c68433f4f8ec97eefe3aa038",
+      "role_summary": "PyCharm IDE configuration file: vcs.xml"
+    },
+    {
+      "path": ".idea/workspace.xml",
+      "size_bytes": 13634,
+      "extension": ".xml",
+      "sha256": "7684fd660846ce6febc868a4655c2f1a6495380c0327ddb25825c353dfff6332",
+      "role_summary": "PyCharm IDE configuration file: workspace.xml"
+    },
+    {
+      "path": "DocuBatchAI.exe",
+      "size_bytes": 28158793,
+      "extension": ".exe",
+      "sha256": "426f848c3172d088b2827af0cc3088a50f86e1c5f2b2a56df74a3596b429b239",
+      "role_summary": "Compiled PyInstaller Windows executable"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 3870,
+      "extension": ".md",
+      "sha256": "f8d62817298be51ad4893b0c021988ea422025cc238a0885eae29d0b693aa5db",
+      "role_summary": "Project documentation, architecture overview, installation and usage guide"
+    },
+    {
+      "path": "api/index.py",
+      "size_bytes": 22,
+      "extension": ".py",
+      "sha256": "a2f5503e8ad67bc1ae4814248cd9139c09785d0cf526159995b79bece8bbaa77",
+      "role_summary": "Vercel serverless entrypoint exporting FastAPI app"
+    },
+    {
+      "path": "assets/mobile_scanner_interface.jpg",
+      "size_bytes": 80763,
+      "extension": ".jpg",
+      "sha256": "54dbb09f7e46d43747303cff2e79b3f295a3de09db0291c8702abb07341741c6",
+      "role_summary": "Interface screenshot: mobile scanner view"
+    },
+    {
+      "path": "assets/pc_desktop_interface.png",
+      "size_bytes": 120628,
+      "extension": ".png",
+      "sha256": "b436da52cf7cd389d42d2e38d7af86cd5fc1b94055871fecf014733337d4e8e8",
+      "role_summary": "Interface screenshot: desktop dashboard view"
+    },
+    {
+      "path": "create_word_report.py",
+      "size_bytes": 57016,
+      "extension": ".py",
+      "sha256": "8f6f768104078683db8bea6b7ec22627a8705d223ac36b800e13afb95c72139c",
+      "role_summary": "Standalone script for generating formal administrative initiative Word reports via python-docx"
+    },
+    {
+      "path": "logo.ico",
+      "size_bytes": 36782,
+      "extension": ".ico",
+      "sha256": "e5c4e50fe9e70b2c5b279114ccb2fc2d1b749164f429ad74000873559cc5ed07",
+      "role_summary": "Application icon for Windows packaging"
+    },
+    {
+      "path": "main.py",
+      "size_bytes": 11896,
+      "extension": ".py",
+      "sha256": "281b68cce531467f2cb40f3aa937517a34c5b1d022c93b1e0c729de335148a5f",
+      "role_summary": "FastAPI application core: route definitions, upload handling, serverless/PyInstaller paths, static mounts"
+    },
+    {
+      "path": "mẫu bìa  2.jpg",
+      "size_bytes": 3787588,
+      "extension": ".jpg",
+      "sha256": "f982d78791c0ade2485f54b3bef183565fb541d9d3e4b391e7c2c777875e77d3",
+      "role_summary": "Project file: mẫu bìa  2.jpg"
+    },
+    {
+      "path": "packaging/DocuBatchAI.spec",
+      "size_bytes": 1095,
+      "extension": ".spec",
+      "sha256": "3363c8fc44f2af767e2b2e7812b210097838802556b4f6aef779a66c1b13186d",
+      "role_summary": "PyInstaller specification file for standalone Windows executable packaging"
+    },
+    {
+      "path": "render.yaml",
+      "size_bytes": 243,
+      "extension": ".yaml",
+      "sha256": "005be21df5a14630e8c0e2e9e8c3ab133d74293636217a8a0dffd29b8fa92be9",
+      "role_summary": "Render platform deployment configuration"
+    },
+    {
+      "path": "requirements.txt",
+      "size_bytes": 124,
+      "extension": ".txt",
+      "sha256": "d302ccdcec3c59c15092e2f902d5f75e6432ece4bdf8cb20ae221ab414d3b616",
+      "role_summary": "Project Python dependencies specification"
+    },
+    {
+      "path": "run.py",
+      "size_bytes": 1370,
+      "extension": ".py",
+      "sha256": "5b9d39e70d6e764be058ef2ef9b3fbd33390686a452058ce4a0b7ae219216146",
+      "role_summary": "Local runtime launcher: multi-interface LAN IP detection, browser auto-launch, uvicorn runner"
+    },
+    {
+      "path": "services/connect_service.py",
+      "size_bytes": 5046,
+      "extension": ".py",
+      "sha256": "463090c98a715591284b2d451e15d3df7c52e247362858c81ea024493c7214d9",
+      "role_summary": "LAN mobile pairing & synchronization manager: session lifecycle, heartbeat, file staging, command actions"
+    },
+    {
+      "path": "services/excel_service.py",
+      "size_bytes": 4686,
+      "extension": ".py",
+      "sha256": "ca20523510cf8b123ab4df59614466896f1deee5a4888e505f0ffe8ab712f40e",
+      "role_summary": "Excel export service via openpyxl: table formatting, custom land cover styling, stream generation"
+    },
+    {
+      "path": "services/gemini_service.py",
+      "size_bytes": 9837,
+      "extension": ".py",
+      "sha256": "ef3acde70c435cae249b3b5ab85ac52e7e00441cef105e1fe2b82d7ea25d89bb",
+      "role_summary": "Gemini API integration via HTTPX: prompt formatting, dynamic model discovery, fallback handling, structured output extraction"
+    },
+    {
+      "path": "static/app.js",
+      "size_bytes": 54743,
+      "extension": ".js",
+      "sha256": "072fb54e06ff27e4377ee72b462cae1d234712508094b85b6860bfbae7790cad",
+      "role_summary": "Main frontend application logic: batch queue, split-screen review, schema editor, mobile sync, API interaction"
+    },
+    {
+      "path": "static/index.html",
+      "size_bytes": 30542,
+      "extension": ".html",
+      "sha256": "192c3847ce6feb54620c132075a4a1de1e7a2a9a564d995a3b411e5362a30ee3",
+      "role_summary": "Main web dashboard interface: responsive Tailwind CSS layout, modal views, document dropzone, review panel"
+    },
+    {
+      "path": "static/logo.png",
+      "size_bytes": 23298,
+      "extension": ".png",
+      "sha256": "2f296b23ac12ecd3faafb7be848d30d1328e718fa331a667c351e8519e0d8914",
+      "role_summary": "Application brand logo for web UI"
+    },
+    {
+      "path": "static/mobile_connect.html",
+      "size_bytes": 27130,
+      "extension": ".html",
+      "sha256": "6efde106e9f02b65b1d83213ca548f852a66e82a00feabed54aeb0ec02469b8a",
+      "role_summary": "Mobile web capture interface: camera integration, multi-angle land cover capture, session synchronization"
+    },
+    {
+      "path": "static/qrcode.min.js",
+      "size_bytes": 19927,
+      "extension": ".js",
+      "sha256": "c541ef06327885a8415bca8df6071e14189b4855336def4f36db54bde8484f36",
+      "role_summary": "Client-side QR code generator library for mobile pairing"
+    },
+    {
+      "path": "static/styles.css",
+      "size_bytes": 3119,
+      "extension": ".css",
+      "sha256": "e70169765819d4efb245f7ce1a290036b34b5064fcfb97fa60797a8a01a17650",
+      "role_summary": "Custom UI styling and animations for the web dashboard"
+    },
+    {
+      "path": "update_existing_template.py",
+      "size_bytes": 8831,
+      "extension": ".py",
+      "sha256": "ec86fd543966a30c316242cb0ea4d8675fd34dd18075ef3840e9c367ce49da5f",
+      "role_summary": "Standalone script for updating project report templates with FPT/internship context"
+    },
+    {
+      "path": "vercel.json",
+      "size_bytes": 192,
+      "extension": ".json",
+      "sha256": "659cf9ac3d12a4c0b913f18d27b165f155c29f9300d1fa31bc469208b3817410",
+      "role_summary": "Vercel serverless deployment routing and asset bundling configuration"
+    }
+  ]
+}

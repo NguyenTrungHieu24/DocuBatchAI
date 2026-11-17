@@ -26,3 +26,9 @@ uploads/
 
 # Environment variables
 .env
+
+# Temporary / Lock files
+~$*
+Thumbs.db
+Desktop.ini
+

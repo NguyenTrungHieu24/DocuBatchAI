@@ -18,7 +18,7 @@ const DEFAULT_TEMPLATES = {
         label: "Số thứ tự thửa BĐĐC 2 cấp",
         description: "Số thứ tự thửa đất trên bản đồ địa chính 2 cấp"
       },
-      {id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất"},
+      {id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất, thay dấu phẩy bằng dấu chấm và bỏ đơn vị diện tích "},
       {id: "muc_dich", label: "Mục đích", description: "Mục đích sử dụng đất"},
       {id: "dia_chi_thua_dat", label: "Địa chỉ thửa đất", description: "Địa chỉ/Vị trí của thửa đất"},
       {id: "thoi_han", label: "Thời hạn", description: "Thời hạn sử dụng đất"},
@@ -32,7 +32,7 @@ const DEFAULT_TEMPLATES = {
       { id: "ma_bia", label: "Mã Bìa", description: "Mã bìa hoặc mã hồ sơ in trên giấy chứng nhận; để trống nếu không thấy" },
       { id: "to_so", label: "Tờ số", description: "Số hiệu tờ bản đồ địa chính" },
       { id: "thua_dat", label: "Thửa đất", description: "Số thửa đất ghi trên giấy chứng nhận" },
-      { id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất, xóa đơn vị ghi trên giấy , đổi dấu phẩy thành dấu chấm giữa các số thập phân" },
+      { id: "dien_tich", label: "Diện tích", description: "Diện tích thửa đất, thay dấu phẩy bằng dấu chấm và bỏ đơn vị diện tích " },
       { id: "muc_dich", label: "Mục Đích", description: "Mục đích sử dụng đất ghi trên giấy chứng nhận" }
     ]
   },

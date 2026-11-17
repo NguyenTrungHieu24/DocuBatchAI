@@ -1,0 +1,523 @@
+{
+  "generated_at": "2026-11-17T10:41:00Z",
+  "modules": {
+    "create_word_report.py": {
+      "local_dependencies": [],
+      "external_dependencies": [
+        "docx",
+        "docx.enum.table",
+        "docx.enum.text",
+        "docx.oxml",
+        "docx.oxml.ns",
+        "docx.shared"
+      ],
+      "stdlib_dependencies": [
+        "os",
+        "sys"
+      ],
+      "all_imports": [
+        {
+          "statement": "import os",
+          "module": "os",
+          "alias": null
+        },
+        {
+          "statement": "import sys",
+          "module": "sys",
+          "alias": null
+        },
+        {
+          "statement": "import docx",
+          "module": "docx",
+          "alias": null
+        },
+        {
+          "statement": "from docx import Document",
+          "module": "docx",
+          "names": [
+            "Document"
+          ]
+        },
+        {
+          "statement": "from docx.shared import Inches, Pt, RGBColor",
+          "module": "docx.shared",
+          "names": [
+            "Inches",
+            "Pt",
+            "RGBColor"
+          ]
+        },
+        {
+          "statement": "from docx.enum.text import WD_ALIGN_PARAGRAPH",
+          "module": "docx.enum.text",
+          "names": [
+            "WD_ALIGN_PARAGRAPH"
+          ]
+        },
+        {
+          "statement": "from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL",
+          "module": "docx.enum.table",
+          "names": [
+            "WD_TABLE_ALIGNMENT",
+            "WD_ALIGN_VERTICAL"
+          ]
+        },
+        {
+          "statement": "from docx.oxml import OxmlElement, parse_xml",
+          "module": "docx.oxml",
+          "names": [
+            "OxmlElement",
+            "parse_xml"
+          ]
+        },
+        {
+          "statement": "from docx.oxml.ns import nsdecls, qn",
+          "module": "docx.oxml.ns",
+          "names": [
+            "nsdecls",
+            "qn"
+          ]
+        }
+      ],
+      "imported_by": []
+    },
+    "main.py": {
+      "local_dependencies": [
+        "services.connect_service",
+        "services.excel_service",
+        "services.gemini_service"
+      ],
+      "external_dependencies": [
+        "dotenv",
+        "fastapi",
+        "fastapi.middleware.cors",
+        "fastapi.responses",
+        "fastapi.staticfiles",
+        "pydantic",
+        "uvicorn"
+      ],
+      "stdlib_dependencies": [
+        "json",
+        "os",
+        "shutil",
+        "sys",
+        "typing",
+        "uuid"
+      ],
+      "all_imports": [
+        {
+          "statement": "import os",
+          "module": "os",
+          "alias": null
+        },
+        {
+          "statement": "import json",
+          "module": "json",
+          "alias": null
+        },
+        {
+          "statement": "import uuid",
+          "module": "uuid",
+          "alias": null
+        },
+        {
+          "statement": "import shutil",
+          "module": "shutil",
+          "alias": null
+        },
+        {
+          "statement": "import sys",
+          "module": "sys",
+          "alias": null
+        },
+        {
+          "statement": "from typing import List, Optional, Dict, Any",
+          "module": "typing",
+          "names": [
+            "List",
+            "Optional",
+            "Dict",
+            "Any"
+          ]
+        },
+        {
+          "statement": "from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request",
+          "module": "fastapi",
+          "names": [
+            "FastAPI",
+            "UploadFile",
+            "File",
+            "Form",
+            "HTTPException",
+            "Request"
+          ]
+        },
+        {
+          "statement": "from fastapi.responses import StreamingResponse, FileResponse, JSONResponse",
+          "module": "fastapi.responses",
+          "names": [
+            "StreamingResponse",
+            "FileResponse",
+            "JSONResponse"
+          ]
+        },
+        {
+          "statement": "from fastapi.staticfiles import StaticFiles",
+          "module": "fastapi.staticfiles",
+          "names": [
+            "StaticFiles"
+          ]
+        },
+        {
+          "statement": "from fastapi.middleware.cors import CORSMiddleware",
+          "module": "fastapi.middleware.cors",
+          "names": [
+            "CORSMiddleware"
+          ]
+        },
+        {
+          "statement": "from pydantic import BaseModel",
+          "module": "pydantic",
+          "names": [
+            "BaseModel"
+          ]
+        },
+        {
+          "statement": "from dotenv import load_dotenv",
+          "module": "dotenv",
+          "names": [
+            "load_dotenv"
+          ]
+        },
+        {
+          "statement": "from services.gemini_service import extract_document_data",
+          "module": "services.gemini_service",
+          "names": [
+            "extract_document_data"
+          ]
+        },
+        {
+          "statement": "from services.excel_service import generate_excel_file",
+          "module": "services.excel_service",
+          "names": [
+            "generate_excel_file"
+          ]
+        },
+        {
+          "statement": "from services.connect_service import connect_service",
+          "module": "services.connect_service",
+          "names": [
+            "connect_service"
+          ]
+        },
+        {
+          "statement": "import uvicorn",
+          "module": "uvicorn",
+          "alias": null
+        }
+      ],
+      "imported_by": [
+        "run.py",
+        "api/index.py"
+      ]
+    },
+    "run.py": {
+      "local_dependencies": [
+        "main"
+      ],
+      "external_dependencies": [
+        "uvicorn"
+      ],
+      "stdlib_dependencies": [
+        "multiprocessing",
+        "os",
+        "socket",
+        "sys",
+        "threading",
+        "webbrowser"
+      ],
+      "all_imports": [
+        {
+          "statement": "import sys",
+          "module": "sys",
+          "alias": null
+        },
+        {
+          "statement": "import os",
+          "module": "os",
+          "alias": null
+        },
+        {
+          "statement": "import multiprocessing",
+          "module": "multiprocessing",
+          "alias": null
+        },
+        {
+          "statement": "import threading",
+          "module": "threading",
+          "alias": null
+        },
+        {
+          "statement": "import webbrowser",
+          "module": "webbrowser",
+          "alias": null
+        },
+        {
+          "statement": "import uvicorn",
+          "module": "uvicorn",
+          "alias": null
+        },
+        {
+          "statement": "import socket",
+          "module": "socket",
+          "alias": null
+        },
+        {
+          "statement": "from main import app",
+          "module": "main",
+          "names": [
+            "app"
+          ]
+        }
+      ],
+      "imported_by": []
+    },
+    "update_existing_template.py": {
+      "local_dependencies": [],
+      "external_dependencies": [
+        "docx",
+        "docx.enum.table",
+        "docx.enum.text",
+        "docx.oxml",
+        "docx.oxml.ns",
+        "docx.shared"
+      ],
+      "stdlib_dependencies": [
+        "os",
+        "sys"
+      ],
+      "all_imports": [
+        {
+          "statement": "import os",
+          "module": "os",
+          "alias": null
+        },
+        {
+          "statement": "import sys",
+          "module": "sys",
+          "alias": null
+        },
+        {
+          "statement": "import docx",
+          "module": "docx",
+          "alias": null
+        },
+        {
+          "statement": "from docx.shared import Inches, Pt, RGBColor",
+          "module": "docx.shared",
+          "names": [
+            "Inches",
+            "Pt",
+            "RGBColor"
+          ]
+        },
+        {
+          "statement": "from docx.enum.text import WD_ALIGN_PARAGRAPH",
+          "module": "docx.enum.text",
+          "names": [
+            "WD_ALIGN_PARAGRAPH"
+          ]
+        },
+        {
+          "statement": "from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL",
+          "module": "docx.enum.table",
+          "names": [
+            "WD_TABLE_ALIGNMENT",
+            "WD_ALIGN_VERTICAL"
+          ]
+        },
+        {
+          "statement": "from docx.oxml import parse_xml",
+          "module": "docx.oxml",
+          "names": [
+            "parse_xml"
+          ]
+        },
+        {
+          "statement": "from docx.oxml.ns import nsdecls",
+          "module": "docx.oxml.ns",
+          "names": [
+            "nsdecls"
+          ]
+        }
+      ],
+      "imported_by": []
+    },
+    "api/index.py": {
+      "local_dependencies": [
+        "main"
+      ],
+      "external_dependencies": [],
+      "stdlib_dependencies": [],
+      "all_imports": [
+        {
+          "statement": "from main import app",
+          "module": "main",
+          "names": [
+            "app"
+          ]
+        }
+      ],
+      "imported_by": []
+    },
+    "services/connect_service.py": {
+      "local_dependencies": [],
+      "external_dependencies": [],
+      "stdlib_dependencies": [
+        "os",
+        "socket",
+        "time",
+        "typing",
+        "uuid"
+      ],
+      "all_imports": [
+        {
+          "statement": "import os",
+          "module": "os",
+          "alias": null
+        },
+        {
+          "statement": "import time",
+          "module": "time",
+          "alias": null
+        },
+        {
+          "statement": "import socket",
+          "module": "socket",
+          "alias": null
+        },
+        {
+          "statement": "import uuid",
+          "module": "uuid",
+          "alias": null
+        },
+        {
+          "statement": "from typing import Dict, List, Optional, Any",
+          "module": "typing",
+          "names": [
+            "Dict",
+            "List",
+            "Optional",
+            "Any"
+          ]
+        }
+      ],
+      "imported_by": [
+        "main.py"
+      ]
+    },
+    "services/excel_service.py": {
+      "local_dependencies": [],
+      "external_dependencies": [
+        "openpyxl",
+        "openpyxl.styles",
+        "openpyxl.utils"
+      ],
+      "stdlib_dependencies": [
+        "io",
+        "typing"
+      ],
+      "all_imports": [
+        {
+          "statement": "import io",
+          "module": "io",
+          "alias": null
+        },
+        {
+          "statement": "from typing import List, Dict, Any",
+          "module": "typing",
+          "names": [
+            "List",
+            "Dict",
+            "Any"
+          ]
+        },
+        {
+          "statement": "from openpyxl import Workbook",
+          "module": "openpyxl",
+          "names": [
+            "Workbook"
+          ]
+        },
+        {
+          "statement": "from openpyxl.styles import Font, PatternFill, Alignment, Border, Side",
+          "module": "openpyxl.styles",
+          "names": [
+            "Font",
+            "PatternFill",
+            "Alignment",
+            "Border",
+            "Side"
+          ]
+        },
+        {
+          "statement": "from openpyxl.utils import get_column_letter",
+          "module": "openpyxl.utils",
+          "names": [
+            "get_column_letter"
+          ]
+        }
+      ],
+      "imported_by": [
+        "main.py"
+      ]
+    },
+    "services/gemini_service.py": {
+      "local_dependencies": [],
+      "external_dependencies": [
+        "httpx"
+      ],
+      "stdlib_dependencies": [
+        "base64",
+        "json",
+        "os",
+        "typing"
+      ],
+      "all_imports": [
+        {
+          "statement": "import base64",
+          "module": "base64",
+          "alias": null
+        },
+        {
+          "statement": "import json",
+          "module": "json",
+          "alias": null
+        },
+        {
+          "statement": "import os",
+          "module": "os",
+          "alias": null
+        },
+        {
+          "statement": "import httpx",
+          "module": "httpx",
+          "alias": null
+        },
+        {
+          "statement": "from typing import Dict, Any, List, Optional",
+          "module": "typing",
+          "names": [
+            "Dict",
+            "Any",
+            "List",
+            "Optional"
+          ]
+        }
+      ],
+      "imported_by": [
+        "main.py"
+      ]
+    }
+  }
+}
