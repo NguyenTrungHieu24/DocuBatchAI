@@ -30,8 +30,8 @@
    - Chụp ảnh hóa đơn, chứng từ trực tiếp bằng camera độ nét cao của điện thoại hoặc chọn nhiều ảnh/PDF từ máy.
    - Tài liệu tự động chuyển thẳng sang danh sách xử lý trên màn hình máy tính trong tích tắc.
    - Chụp hai mặt của nhiều loại giấy tờ bằng điện thoại; ứng dụng ghép ảnh thành một tài liệu. Bìa giấy chứng nhận tự chọn mẫu riêng, các loại khác dùng mẫu đang chọn trên máy tính.
-6. **Bảo mật:** Gemini và Dify API key chỉ được lưu trong file `.env` trên máy chủ; trình duyệt không nhận hoặc lưu key.
-7. **Trợ lý đất đai:** Mở nút “Hỏi trợ lý đất đai” ở góc dưới để trò chuyện với agent Dify về hồ sơ, thủ tục và quy trình. Agent và kho kiến thức được cấu hình riêng trên Dify.
+6. **Bảo mật:** Gemini API key chỉ được lưu trong file `.env` trên máy chủ; trình duyệt không nhận hoặc lưu key.
+7. **Trợ lý đất đai:** Mở nút “Hỏi trợ lý đất đai” ở góc dưới để trò chuyện với Gemini; backend áp dụng chỉ dẫn giới hạn phạm vi về đất đai và thủ tục hành chính.
 
 ---
 
@@ -57,20 +57,13 @@ GEMINI_API_KEY=AIzaSy...
 ```
 Khởi động lại ứng dụng sau khi sửa `.env`. Không commit hoặc chia sẻ file `.env`.
 
-### 5. Kết nối trợ lý dự án với Dify
+### 5. Trợ lý chat đất đai
 
-1. Tạo ứng dụng Chatflow hoặc Agent trong Dify; trong System Instructions đặt vai trò trợ lý đất đai, giới hạn phạm vi trả lời và yêu cầu không bịa căn cứ. Kết nối kho kiến thức từ nguồn pháp lý chính thức, còn hiệu lực. Backend DocuBatch cũng gửi chỉ dẫn phạm vi cùng từng câu hỏi.
-2. Xuất bản ứng dụng, mở **API Access** của ứng dụng và tạo API key.
-3. Thêm cấu hình sau vào `.env` của DocuBatch AI:
-```env
-DIFY_API_KEY=app-...
-DIFY_API_BASE_URL=https://api.dify.ai/v1
-```
-Với Dify tự host, đặt `DIFY_API_BASE_URL` thành địa chỉ máy chủ Dify kèm `/v1`. API key chỉ được gửi từ backend DocuBatch đến Dify, không đưa xuống trình duyệt. `DIFY_API_KEY` dùng cho chat; `GEMINI_API_KEY` dùng riêng cho chức năng trích xuất tài liệu.
+Chat dùng `GEMINI_API_KEY` với system prompt giới hạn câu trả lời vào đất đai và thủ tục hành chính. Cùng key này được dùng cho chức năng trích xuất tài liệu. Đặt key trong `.env` local hoặc biến môi trường trên hosting; không đưa key xuống trình duyệt. `DIFY_API_KEY` không còn cần cho luồng chat.
 
 ### Deploy trên Vercel
 
-Vercel dùng `api/index.py` làm entrypoint cho FastAPI. Trong Project Settings → Environment Variables, đặt `GEMINI_API_KEY` cho trích xuất, `DIFY_API_KEY` cho chat và nếu cần `DIFY_API_BASE_URL`, sau đó redeploy để áp dụng. Tệp tải lên trên Vercel được lưu tạm trong `/tmp` và không được giữ lại lâu dài.
+Vercel dùng `api/index.py` làm entrypoint cho FastAPI. Trong Project Settings → Environment Variables, đặt `GEMINI_API_KEY` cho chat và trích xuất, sau đó redeploy để áp dụng. `DIFY_API_KEY` không còn được dùng. Tệp tải lên trên Vercel được lưu tạm trong `/tmp` và không được giữ lại lâu dài.
 
 ### Troubleshooting extraction
 

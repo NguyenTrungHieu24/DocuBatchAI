@@ -50,28 +50,30 @@ app.add_middleware(
 # Phục vụ file tĩnh (CSS, JS, Assets)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+class ProjectChatMessage(BaseModel):
+    role: str = Field(max_length=16)
+    content: str = Field(max_length=2000)
+
 class ProjectChatRequest(BaseModel):
     message: str = Field(max_length=2000)
-    user_id: str = Field(min_length=1, max_length=80)
-    conversation_id: str = Field(default="", max_length=120)
+    history: List[ProjectChatMessage] = Field(default_factory=list, max_length=12)
 
 @app.post("/api/project-chat")
 async def project_chat(payload: ProjectChatRequest):
-    api_key = os.environ.get("DIFY_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
-        raise HTTPException(status_code=400, detail="Chưa cấu hình DIFY_API_KEY trên máy chủ.")
-    base_url = os.environ.get("DIFY_API_BASE_URL", "https://api.dify.ai/v1")
+        raise HTTPException(status_code=400, detail="Chưa cấu hình GEMINI_API_KEY trên máy chủ.")
     message = payload.message.strip()
     if not message or len(message) > 2000:
         raise HTTPException(status_code=422, detail="Câu hỏi phải có từ 1 đến 2.000 ký tự.")
+    history = [
+        {"role": item.role, "content": item.content.strip()}
+        for item in payload.history[-12:]
+        if item.role in ("user", "model") and item.content.strip()
+    ]
     try:
-        return await answer_project_question(
-            message,
-            api_key,
-            base_url,
-            payload.user_id,
-            payload.conversation_id,
-        )
+        answer = await answer_project_question(message, history, api_key)
+        return {"answer": answer}
     except RuntimeError as exc:
         raise HTTPException(status_code=502, detail=str(exc))
 
