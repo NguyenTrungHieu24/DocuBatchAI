@@ -8,12 +8,13 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.responses import StreamingResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
 from services.gemini_service import extract_document_data
 from services.excel_service import generate_excel_file
 from services.connect_service import connect_service
+from services.project_chat_service import answer_project_question
 
 if getattr(sys, "frozen", False):
     # Running in a PyInstaller bundle
@@ -49,12 +50,73 @@ app.add_middleware(
 # Phục vụ file tĩnh (CSS, JS, Assets)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+class ProjectChatRequest(BaseModel):
+    message: str = Field(max_length=2000)
+    user_id: str = Field(min_length=1, max_length=80)
+    conversation_id: str = Field(default="", max_length=120)
+
+@app.post("/api/project-chat")
+async def project_chat(payload: ProjectChatRequest):
+    api_key = os.environ.get("DIFY_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=400, detail="Chưa cấu hình DIFY_API_KEY trên máy chủ.")
+    base_url = os.environ.get("DIFY_API_BASE_URL", "https://api.dify.ai/v1")
+    message = payload.message.strip()
+    if not message or len(message) > 2000:
+        raise HTTPException(status_code=422, detail="Câu hỏi phải có từ 1 đến 2.000 ký tự.")
+    try:
+        return await answer_project_question(
+            message,
+            api_key,
+            base_url,
+            payload.user_id,
+            payload.conversation_id,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
 @app.get("/")
 async def get_index():
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {"message": "DocuBatch API đang chạy. Vui lòng kiểm tra file static/index.html"}
+
+@app.get("/api/land-notices")
+async def get_land_notices():
+    """Return notices explicitly published by the project operator."""
+    notices_path = os.path.join(STATIC_DIR, "land_notices.json")
+    try:
+        with open(notices_path, "r", encoding="utf-8") as notices_file:
+            data = json.load(notices_file)
+    except FileNotFoundError:
+        return {"updated_at": None, "notices": []}
+    except (OSError, json.JSONDecodeError):
+        raise HTTPException(status_code=503, detail="Không thể đọc danh sách thông báo đất đai.")
+
+    if not isinstance(data, dict) or not isinstance(data.get("notices", []), list):
+        raise HTTPException(status_code=503, detail="Dữ liệu thông báo đất đai không hợp lệ.")
+
+    valid_notices = []
+    for notice in data["notices"][:100]:
+        if not isinstance(notice, dict):
+            continue
+        title = str(notice.get("title", "")).strip()[:200]
+        content = str(notice.get("content", "")).strip()[:4000]
+        if not title or not content:
+            continue
+        url = str(notice.get("url", "")).strip()[:1000]
+        if url and not url.startswith(("https://", "http://")):
+            url = ""
+        valid_notices.append({
+            "id": str(notice.get("id", ""))[:100],
+            "title": title,
+            "content": content,
+            "region": str(notice.get("region", "Toàn quốc"))[:120],
+            "date": str(notice.get("date", ""))[:40],
+            "url": url,
+        })
+    return {"updated_at": data.get("updated_at"), "notices": valid_notices}
 
 @app.get("/api/config")
 async def get_config():

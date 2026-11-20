@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full bg-slate-50">
+<html lang="vi" data-type="software" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DocuBatch AI - Trợ lý Xử lý &amp; Trích xuất Đa Tài Liệu</title>
-  <!-- Tailwind CSS CDN -->
+  <meta name="page-type" content="software">
+  <meta name="site-kind" content="software">
+  <title>DocuBatch AI — Trích xuất & đối soát tài liệu hàng loạt</title>
+  <link rel="icon" type="image/png" href="/static/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -12,545 +18,450 @@
         extend: {
           colors: {
             brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              800: '#1e40af',
-              900: '#1e3a8a',
+              50: '#f0f7f2',
+              100: '#d8f3dc',
+              500: '#2d6a4f',
+              600: '#1b4332',
+              700: '#153527',
             }
           }
         }
       }
     }
   </script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="icon" type="image/png" href="/static/logo.png">
   <link rel="stylesheet" href="/static/styles.css">
-  <!-- QRCode.js Library -->
   <script src="/static/qrcode.min.js"></script>
 </head>
-<body class="h-full flex flex-col text-slate-800 antialiased font-sans">
+<body class="h-full flex flex-col">
 
-  <!-- Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <img src="/static/logo.png" alt="DocuBatch AI Logo" class="w-10 h-10 object-contain drop-shadow-sm">
+  <!-- ─── Header ─── -->
+  <header class="db-header">
+    <div class="db-header-inner">
+      <a href="/" class="db-logo-group">
+        <img src="/static/logo.png" alt="DocuBatch AI" class="db-logo-img">
         <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="text-xl font-bold tracking-tight text-slate-900">Quét Tài Liệu <span class="text-brand-600">AI</span></h1>
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-              <i class="fa-solid fa-wand-magic-sparkles mr-1 text-[10px]"></i> Flash 2.5
-            </span>
-          </div>
-          <p class="text-xs text-slate-500">Trích xuất &amp; đối soát dữ liệu hàng loạt tài liệu thông minh</p>
+          <h1 class="db-logo-title">DocuBatch <span>AI</span></h1>
+          <p class="db-logo-sub">Trích xuất & đối soát tài liệu thông minh</p>
         </div>
-      </div>
+      </a>
 
-      <div class="flex items-center space-x-3">
-        <!-- Connect Phone QR Button -->
-        <button id="btnOpenMobileConnectHeader" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 transition font-medium text-xs shadow-sm">
-          <i class="fa-solid fa-qrcode text-brand-600"></i>
-          <span class="hidden sm:inline">Kết nối điện thoại</span>
-          <span class="sm:hidden">QR</span>
+      <div class="db-header-actions">
+        <button id="btnOpenMobileConnectHeader" class="db-btn db-btn--ghost db-btn--sm" type="button">
+          <i class="fa-solid fa-qrcode"></i>
+          <span class="hide-mobile">Kết nối điện thoại</span>
         </button>
-
-        <!-- Server API Key Status Badge -->
-        <button id="btnOpenSettings" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium hover:bg-slate-50 transition">
-          <i id="apiKeyLogo" class="fa-solid fa-robot text-brand-600 hidden" aria-label="AI sẵn sàng"></i>
-          <span id="apiKeyIndicator" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span id="apiKeyText" class="text-slate-600">Đang kiểm tra API Key máy chủ...</span>
-          <i class="fa-solid fa-gear text-slate-400 ml-1"></i>
+        <button id="landNoticesToggle" class="db-btn db-btn--ghost db-btn--sm" type="button" aria-expanded="false" aria-controls="landNoticesPanel">
+          <i class="fa-solid fa-bell"></i><span class="hide-mobile">Thông báo đất đai</span><span id="landNoticesCount" class="land-notices-count hidden">0</span>
         </button>
-
+        <button id="btnOpenSettings" class="db-btn db-btn--ghost db-btn--sm" type="button">
+          <i id="apiKeyLogo" class="fa-solid fa-robot db-accent hidden" aria-label="AI sẵn sàng"></i>
+          <span id="apiKeyIndicator" class="db-dot db-dot--warn pulse"></span>
+          <span id="apiKeyText" class="hide-mobile">Đang kiểm tra…</span>
+          <i class="fa-solid fa-gear db-muted"></i>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col space-y-6">
+  <!-- ─── Main Workspace ─── -->
+  <main class="db-workspace">
 
-    <!-- Section 1: Template & Schema Configuration -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+    <!-- Intro -->
+    <section class="db-intro">
+      <div>
+        <p class="db-kicker">BÀN LÀM VIỆC</p>
+        <h2 class="db-heading">Trích dữ liệu tài liệu</h2>
+        <p class="db-lead">Chọn trường cần đọc, thêm hồ sơ và rà soát kết quả trong cùng một nơi.</p>
+      </div>
+      <div class="db-pill">
+        <span class="db-pill-dot"></span>
+        <span>PDF và ảnh · Tối đa 20 MB mỗi tệp</span>
+      </div>
+    </section>
+
+    <!-- ── 1. Schema / Template ── -->
+    <div class="db-card">
+      <div class="db-card-head">
         <div>
-          <h2 class="text-base font-semibold text-slate-900 flex items-center">
-            <i class="fa-solid fa-layer-group text-brand-600 mr-2"></i> 1. Mẫu tài liệu &amp; Các trường cần trích xuất
-          </h2>
-          <p class="text-xs text-slate-500 mt-0.5">Chọn mẫu văn bản phù hợp hoặc tự thêm các cột bạn muốn AI đọc tự động.</p>
+          <h2 class="db-section-title"><i class="fa-solid fa-layer-group"></i> 1. Trường dữ liệu</h2>
+          <p class="db-hint">Chọn mẫu văn bản hoặc tự thêm các cột bạn muốn AI đọc.</p>
         </div>
-        <div class="flex items-center space-x-2">
-          <label for="templateSelect" class="text-xs font-medium text-slate-600 whitespace-nowrap">Mẫu có sẵn:</label>
-          <select id="templateSelect" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg focus:ring-brand-500 focus:border-brand-500 block p-2">
-
+        <div class="db-row db-gap-8">
+          <label for="templateSelect" class="db-label-inline">Mẫu:</label>
+          <select id="templateSelect" class="db-select">
             <option value="land_record">🗺️ Thông tin thửa đất / BĐĐC</option>
-            <option value="land_cover">📕 Bìa giấy chứng nhận quyền sử dụng đất</option>
-            <option value="custom">⚙️ Tùy chỉnh (Tự tạo trường)</option>
-
+            <option value="land_cover">📕 Bìa giấy chứng nhận QSD đất</option>
+            <option value="custom">⚙️ Tùy chỉnh</option>
           </select>
-          <button id="btnOpenSchemaModal" class="px-3 py-2 text-xs font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition flex items-center space-x-1">
+          <button id="btnOpenSchemaModal" class="db-btn db-btn--ghost db-btn--sm" type="button">
             <i class="fa-solid fa-sliders"></i>
             <span>Chỉnh sửa trường</span>
           </button>
         </div>
       </div>
-
-      <!-- Current Schema Fields Tags -->
-      <div class="flex flex-wrap items-center gap-2" id="schemaTagsList">
-        <!-- Rendered by JS -->
-      </div>
+      <div class="db-tags" id="schemaTagsList"><!-- JS --></div>
     </div>
 
-    <!-- Section 2: Upload Zone & Actions -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- Upload Dropzone (1 col on large screens) -->
-      <div class="lg:col-span-1 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col">
-        <h2 class="text-base font-semibold text-slate-900 mb-3 flex items-center">
-          <i class="fa-solid fa-cloud-arrow-up text-brand-600 mr-2"></i> 2. Tải tài liệu lên
-        </h2>
+    <!-- ── 2. Upload + Queue ── -->
+    <div class="db-grid-2-1">
 
-        <div id="dropZone" class="flex-1 min-h-[180px] border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-brand-500 hover:bg-brand-50/30 transition-all cursor-pointer">
+      <!-- Upload -->
+      <div class="db-card db-card--upload">
+        <h2 class="db-section-title"><i class="fa-solid fa-cloud-arrow-up"></i> 2. Thêm tài liệu</h2>
+
+        <div id="dropZone" class="db-dropzone">
           <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" class="hidden">
-          <div class="w-14 h-14 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mb-3">
-            <i class="fa-solid fa-file-arrow-up text-2xl"></i>
+          <div class="db-dropzone-icon">
+            <i class="fa-solid fa-file-arrow-up"></i>
           </div>
-          <p class="text-sm font-semibold text-slate-800">Kéo thả nhiều file vào đây</p>
-          <p class="text-xs text-slate-500 mt-1">hoặc <span class="text-brand-600 font-medium">Bấm để chọn file từ máy</span></p>
-          <p class="text-[11px] text-slate-400 mt-3">Hỗ trợ: PDF, PNG, JPG, JPEG (tối đa 20MB/file)</p>
+          <p class="db-dropzone-title">Kéo thả nhiều file vào đây</p>
+          <p class="db-dropzone-hint">hoặc <span class="db-accent">bấm để chọn file</span></p>
+          <p class="db-dropzone-note">PDF, PNG, JPG, JPEG — tối đa 20 MB/file</p>
         </div>
 
-        <!-- Camera Capture Button -->
-        <button id="btnOpenCamera" class="mt-3 w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-medium text-sm flex items-center justify-center space-x-2 transition shadow-sm">
-          <i class="fa-solid fa-camera text-white"></i>
+        <button id="btnOpenCamera" class="db-btn db-btn--dark db-btn--full" type="button">
+          <i class="fa-solid fa-camera"></i>
           <span>Chụp ảnh từ Camera</span>
         </button>
 
-        <!-- Connect Phone QR Button -->
-        <button id="btnOpenMobileConnectUpload" class="mt-2 w-full py-2.5 px-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-brand-700 border border-brand-200/80 rounded-xl font-medium text-sm flex items-center justify-center space-x-2 transition shadow-sm">
-          <i class="fa-solid fa-qrcode text-brand-600"></i>
+        <button id="btnOpenMobileConnectUpload" class="db-btn db-btn--outline db-btn--full" type="button">
+          <i class="fa-solid fa-qrcode"></i>
           <span>Quét mã QR kết nối điện thoại</span>
         </button>
 
-        <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
+        <div class="db-row db-between db-hint" style="margin-top:12px">
           <span id="queueCounter">Đã chọn: 0 file</span>
-          <button id="btnClearQueue" class="text-rose-600 hover:underline hidden">Xóa hàng chờ</button>
+          <button id="btnClearQueue" class="db-link db-link--danger hidden" type="button">Xóa hàng chờ</button>
         </div>
 
-        <button id="btnStartBatch" class="mt-3 w-full py-2.5 px-4 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white rounded-xl font-medium text-sm shadow-md shadow-brand-500/20 flex items-center justify-center space-x-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
+        <button id="btnStartBatch" class="db-btn db-btn--primary db-btn--full db-btn--lg" type="button">
           <i class="fa-solid fa-bolt"></i>
           <span>Bắt đầu Trích xuất AI</span>
         </button>
       </div>
 
-      <!-- File Queue & Processing Progress List (2 cols on large screens) -->
-      <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-base font-semibold text-slate-900 flex items-center">
-            <i class="fa-solid fa-list-check text-brand-600 mr-2"></i> Danh sách xử lý
-          </h2>
-          <div class="flex items-center space-x-2">
-            <span id="batchProgressSummary" class="text-xs font-medium text-slate-500">Chưa có tác vụ</span>
-          </div>
+      <!-- Queue list -->
+      <div class="db-card db-card--queue">
+        <div class="db-row db-between" style="margin-bottom:12px">
+          <h2 class="db-section-title"><i class="fa-solid fa-list-check"></i> Danh sách xử lý</h2>
+          <span id="batchProgressSummary" class="db-hint">Chưa có tác vụ</span>
         </div>
-
-        <!-- Scrollable list of files -->
-        <div id="fileQueueContainer" class="flex-1 overflow-y-auto max-h-[300px] space-y-2 pr-1 divide-y divide-slate-100">
-          <div id="emptyQueueMsg" class="py-12 text-center text-slate-400">
-            <i class="fa-regular fa-folder-open text-4xl mb-2 text-slate-300"></i>
-            <p class="text-sm">Chưa có tệp nào được tải lên.</p>
-            <p class="text-xs text-slate-400 mt-1">Hãy kéo thả hóa đơn, hợp đồng vào ô bên trái để bắt đầu.</p>
+        <div id="fileQueueContainer" class="db-queue-list">
+          <div id="emptyQueueMsg" class="db-empty">
+            <i class="fa-regular fa-folder-open"></i>
+            <p>Chưa có tệp nào.</p>
+            <p class="db-hint">Kéo thả hồ sơ vào ô bên trái để bắt đầu.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Section 3: Master Data Table & Export -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col flex-1">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+    <!-- ── 3. Results Table ── -->
+    <div class="db-card db-card--table">
+      <div class="db-card-head">
         <div>
-          <h2 class="text-base font-semibold text-slate-900 flex items-center">
-            <i class="fa-solid fa-table-list text-brand-600 mr-2"></i> 3. Bảng Dữ liệu Tổng hợp &amp; Đối soát
-          </h2>
-          <p class="text-xs text-slate-500 mt-0.5">Nhấp vào từng dòng để mở màn hình đối soát song song (Split-screen).</p>
+          <h2 class="db-section-title"><i class="fa-solid fa-table-list"></i> 3. Kết quả trích xuất</h2>
+          <p class="db-hint">Nhấp vào dòng để mở màn hình đối soát song song.</p>
         </div>
-
-        <div class="flex items-center space-x-2">
-          <button id="btnClearTable" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="Xóa toàn bộ các dòng trong bảng">
+        <div class="db-row db-gap-8">
+          <button id="btnClearTable" class="db-btn db-btn--ghost db-btn--danger db-btn--sm" type="button">
             <i class="fa-solid fa-trash-can"></i>
             <span>Xóa bảng</span>
           </button>
-          <button id="btnExportExcel" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-medium shadow-sm transition flex items-center space-x-1.5 disabled:opacity-50">
+          <button id="btnExportExcel" class="db-btn db-btn--success db-btn--sm" type="button">
             <i class="fa-solid fa-file-excel"></i>
-            <span>Xuất file Excel (.xlsx)</span>
-          </button>
-          <button id="btnExportJson" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium transition flex items-center space-x-1.5 disabled:opacity-50">
-            <i class="fa-solid fa-code"></i>
-            <span>Xuất JSON</span>
+            <span>Xuất Excel (.xlsx)</span>
           </button>
         </div>
       </div>
-
-      <!-- Table Container -->
-      <div class="overflow-x-auto border border-slate-200 rounded-xl flex-1">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase font-semibold">
+      <div class="db-table-wrap">
+        <table class="db-table">
+          <thead>
             <tr id="tableHeaderRow">
-              <th class="p-3 w-12 text-center">STT</th>
-              <th class="p-3 w-44">Tài liệu</th>
-              <!-- Dynamic Headers -->
-              <th class="p-3 w-28 text-center">Đối soát</th>
-              <th class="p-3 w-24 text-center">Thao tác</th>
+              <th class="db-th-center" style="width:48px">STT</th>
+              <th style="width:180px">Tài liệu</th>
+              <!-- Dynamic -->
+              <th class="db-th-center" style="width:112px">Đối soát</th>
+              <th class="db-th-center" style="width:96px">Thao tác</th>
             </tr>
           </thead>
-          <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
+          <tbody id="tableBody">
             <tr>
-              <td colspan="6" class="p-8 text-center text-slate-400">
-                Chưa có dữ liệu nào được trích xuất.
-              </td>
+              <td colspan="6" class="db-td-empty">Chưa có dữ liệu nào được trích xuất.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
   </main>
 
-  <footer class="w-full border-t border-slate-200 bg-white py-3 text-center text-xs text-slate-500">
-    DocuBatch AI <span class="mx-1">·</span> Phiên bản 2.0
+  <section class="land-notices-panel hidden" id="landNoticesPanel" aria-label="Thông báo đất đai">
+    <div class="land-notices-head"><strong>Thông báo đất đai</strong><button id="landNoticesClose" type="button" aria-label="Đóng thông báo"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="land-notices-list" id="landNoticesList" aria-live="polite"><p class="land-notices-empty">Đang tải thông báo…</p></div>
+    <small class="land-notices-foot">Chỉ hiển thị thông tin do đơn vị quản trị cập nhật; hãy kiểm tra nguồn chính thức.</small>
+  </section>
+                                     <!---  Trợ lý đất đất đai -->
+
+  <section class="project-chat" aria-label="Trợ lý thông tin đất đai">
+    <button class="project-chat-toggle" id="projectChatToggle" type="button" aria-expanded="false" aria-controls="projectChatPanel">
+      <svg class="project-chat-mascot" viewBox="0 0 120 150" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="tree-sticker-shadow" x="-25%" y="-15%" width="150%" height="145%">
+            <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#14241b" flood-opacity=".32"/>
+          </filter>
+        </defs>
+        <g filter="url(#tree-sticker-shadow)" stroke="#18382d" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M60 4 67 17 82 18 71 28 75 43 60 35 45 43 49 28 38 18 53 17Z" fill="#ffe15c" stroke-width="2.5"/>
+          <path d="M58 34C49 34 44 44 42 51 31 51 25 60 27 69 18 74 18 85 27 91 17 99 21 109 32 112 25 120 32 128 45 128L44 139Q45 145 51 142L60 138 69 142Q75 145 76 139L75 128C89 128 96 120 88 112 101 108 103 98 93 91 102 83 100 73 91 69 94 60 87 51 77 51 75 42 68 34 58 34Z" fill="#fff" stroke="#fff" stroke-width="7"/>
+          <path d="M59 35C51 37 48 44 46 53 38 51 31 57 32 64 25 69 27 77 36 80 28 85 27 91 37 94 29 99 30 105 41 107 35 112 37 117 49 117 44 122 43 126 52 128L51 138 60 134 69 138 68 128C79 127 81 122 73 117 87 117 89 111 79 106 92 105 93 99 82 94 93 90 93 85 82 79 91 77 92 70 84 65 87 59 81 53 73 55 70 46 66 39 59 35Z" fill="#128258" stroke-width="2.8"/>
+          <path d="M48 48C44 54 42 58 36 61M65 44C62 52 58 57 51 61M37 70C45 72 52 69 58 64M32 87C43 90 53 86 61 79M39 101C50 103 61 99 68 93M47 114C57 116 66 113 74 108M80 60C85 65 87 69 87 73M82 81C76 84 70 82 65 78M85 97C76 99 69 96 63 91M75 119C68 116 63 112 60 108" fill="none" stroke="#48c58a" stroke-width="2.4"/>
+          <path d="M43 58C46 61 50 62 54 61M38 78C43 81 48 81 53 79M39 96C44 98 48 98 53 97M47 108C51 110 54 110 57 109M75 62C72 64 69 64 66 63M81 75C77 77 73 77 70 76M78 90C74 92 70 91 66 89M74 104C70 105 66 104 63 102" fill="none" stroke="#075d43" stroke-width="2.4"/>
+          <path d="M44 67c-2 4-2 9 0 12m32-12c2 4 2 9 0 12" fill="none" stroke="#f5d6a0" stroke-width="1.5"/>
+          <ellipse cx="51" cy="76" rx="2.8" ry="4" fill="#fff8dc" stroke-width="1.4"/>
+          <ellipse cx="68" cy="76" rx="2.8" ry="4" fill="#fff8dc" stroke-width="1.4"/>
+          <path d="m59.5 78-3.5 6h7Z" fill="#f1a064" stroke-width="1.4"/>
+          <path d="M54 89q6 6 12 0" fill="none" stroke="#fff0d2" stroke-width="2"/>
+          <circle cx="42" cy="55" r="3.5" fill="#ffdd56" stroke-width="1.3"/><circle cx="76" cy="57" r="3.5" fill="#f05455" stroke-width="1.3"/>
+          <circle cx="35" cy="87" r="3.7" fill="#f05455" stroke-width="1.3"/><circle cx="84" cy="87" r="3.7" fill="#ffdf55" stroke-width="1.3"/>
+          <circle cx="43" cy="105" r="3.7" fill="#ffdf55" stroke-width="1.3"/><circle cx="76" cy="109" r="4" fill="#ed5150" stroke-width="1.3"/>
+          <circle cx="58" cy="119" r="3" fill="#ffdf55" stroke-width="1.2"/><circle cx="88" cy="101" r="3" fill="#f05455" stroke-width="1.2"/>
+          <path d="M49 133q11 5 22 0l3 8q-3 5-9 2l-5-2-5 3q-6 2-8-3Z" fill="#bd8359" stroke-width="2.2"/>
+          <path d="M52 137v4m8-4v5m8-5v4" fill="none" stroke="#f0c491" stroke-width="1.7"/>
+          <path d="m32 73 2 3m51 13 2 3m-42 23 2 3" fill="none" stroke="#fff" stroke-width="2.5"/>
+        </g>
+      </svg>
+      <span class="project-chat-label">Hỏi AI</span>
+    </button>
+    <div class="project-chat-panel hidden" id="projectChatPanel">
+      <div class="project-chat-head">
+        <div><strong>Trợ lý thông tin </strong><small>Hỏi thủ tục, hồ sơ và quy trình</small></div>
+        <button id="projectChatClose" type="button" aria-label="Đóng chat"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="project-chat-messages" id="projectChatMessages" aria-live="polite">
+        <div class="project-chat-message assistant">Xin chào! Tôi có thể giải thích thông tin và quy trình đất đai. Quy định có thể thay đổi theo địa phương; hãy cho biết tỉnh/thành và kiểm tra thông tin chính thức trước khi nộp hồ sơ.</div>
+      </div>
+      <form class="project-chat-form" id="projectChatForm">
+        <textarea id="projectChatInput" rows="1" maxlength="2000" placeholder="Hỏi về hồ sơ hoặc thủ tục đất đai…" aria-label="Câu hỏi về đất đai" required></textarea>
+        <button type="submit" id="projectChatSend" aria-label="Gửi câu hỏi"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ─── Footer ─── -->
+  <footer class="db-footer">
+    DocuBatch AI <span class="db-sep">·</span> Phiên bản 2.0
   </footer>
 
-  <!-- ================= MODALS ================= -->
+  <!-- ═══════════════ MODALS ═══════════════ -->
 
-  <!-- 1. AI Settings Modal -->
-  <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 class="text-base font-bold text-slate-900 flex items-center">
-          <i class="fa-solid fa-gear text-brand-600 mr-2"></i> Cấu hình AI
-        </h3>
-        <button id="btnCloseSettings" class="text-slate-400 hover:text-slate-600">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+  <!-- Settings -->
+  <div id="settingsModal" class="db-overlay hidden">
+    <div class="db-modal db-modal--sm">
+      <div class="db-modal-head">
+        <h3><i class="fa-solid fa-gear db-accent"></i> Cấu hình AI</h3>
+        <button id="btnCloseSettings" class="db-modal-close" type="button"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
-      <div class="mt-4 space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Mô hình AI:</label>
-          <select id="selectModel" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
-            <option value="auto">✨ Tự động nhận diện model khả dụng (Khuyên dùng)</option>
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Tốc độ cao, thế hệ mới)</option>
-            <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest</option>
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Độ chính xác cao nhất)</option>
-          </select>
-        </div>
-
+      <div class="db-modal-body">
+        <label class="db-label">Mô hình AI:</label>
+        <select id="selectModel" class="db-select db-select--full">
+          <option value="auto">✨ Tự động tối ưu (Khuyên dùng - Siêu nhanh 3s)</option>
+          <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite (Tốc độ cao nhất ~3s, chính xác)</option>
+          <option value="gemini-3.5-flash">Gemini 3.5 Flash (Thế hệ mới, đa năng)</option>
+          <option value="gemini-3.8-flash">Gemini 3.8 Flash (Chính xác cao)</option>
+        </select>
       </div>
-
-      <div class="mt-6 flex justify-end space-x-2">
-        <button id="btnSaveSettings" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium">
-          Lưu mô hình
-        </button>
+      <div class="db-modal-foot">
+        <button id="btnSaveSettings" class="db-btn db-btn--primary db-btn--sm" type="button">Lưu mô hình</button>
       </div>
     </div>
   </div>
 
-  <!-- 2. Schema Builder Modal -->
-  <div id="schemaModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 max-h-[85vh] flex flex-col">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+  <!-- Schema Builder -->
+  <div id="schemaModal" class="db-overlay hidden">
+    <div class="db-modal db-modal--md db-modal--scroll">
+      <div class="db-modal-head">
         <div>
-          <h3 class="text-base font-bold text-slate-900 flex items-center">
-            <i class="fa-solid fa-sliders text-brand-600 mr-2"></i> Tùy chỉnh các trường trích xuất
-          </h3>
-          <p class="text-xs text-slate-500 mt-0.5">Thêm hoặc bớt các trường thông tin bạn muốn AI bóc tách.</p>
+          <h3><i class="fa-solid fa-sliders db-accent"></i> Tùy chỉnh trường trích xuất</h3>
+          <p class="db-hint">Thêm hoặc bớt các trường thông tin AI bóc tách.</p>
         </div>
-        <button id="btnCloseSchemaModal" class="text-slate-400 hover:text-slate-600">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button id="btnCloseSchemaModal" class="db-modal-close" type="button"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
-      <div class="mt-4">
-        <label for="schemaNameInput" class="block text-xs font-semibold text-slate-700 mb-1">Tên biểu mẫu:</label>
-        <input id="schemaNameInput" type="text" maxlength="120" placeholder="Tên biểu mẫu"
-          class="w-full p-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-brand-500">
+      <div class="db-modal-body">
+        <label for="schemaNameInput" class="db-label">Tên biểu mẫu:</label>
+        <input id="schemaNameInput" type="text" maxlength="120" placeholder="Tên biểu mẫu" class="db-input db-input--full">
       </div>
-
-      <div class="flex-1 overflow-y-auto my-4 space-y-2 pr-1" id="schemaFieldsEditorList">
-        <!-- Schema fields inputs generated by JS -->
-      </div>
-
-      <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-        <button id="btnAddFieldBtn" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium flex items-center space-x-1">
-          <i class="fa-solid fa-plus"></i>
-          <span>Thêm trường mới</span>
+      <div class="db-modal-scroll" id="schemaFieldsEditorList"><!-- JS --></div>
+      <div class="db-modal-foot db-between">
+        <button id="btnAddFieldBtn" class="db-btn db-btn--ghost db-btn--sm" type="button">
+          <i class="fa-solid fa-plus"></i> Thêm trường mới
         </button>
-        <button id="btnSaveSchemaBtn" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium">
-          Áp dụng mẫu này
-        </button>
+        <button id="btnSaveSchemaBtn" class="db-btn db-btn--primary db-btn--sm" type="button">Áp dụng mẫu này</button>
       </div>
     </div>
   </div>
 
-  <!-- 3. Split-Screen Review Modal -->
-  <div id="reviewModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
-    <div class="bg-white rounded-2xl w-full max-w-7xl h-[92vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
-      
-      <!-- Review Modal Header -->
-      <div class="h-14 px-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-        <div class="flex items-center space-x-3">
-          <span class="p-2 rounded-lg bg-blue-100 text-brand-700">
-            <i class="fa-solid fa-magnifying-glass-arrow-right"></i>
-          </span>
+  <!-- Split-Screen Review -->
+  <div id="reviewModal" class="db-overlay hidden">
+    <div class="db-review">
+      <div class="db-review-head">
+        <div class="db-row db-gap-12">
+          <span class="db-review-icon"><i class="fa-solid fa-magnifying-glass-arrow-right"></i></span>
           <div>
-            <h3 id="reviewModalTitle" class="text-sm font-bold text-slate-900">Chi tiết tài liệu</h3>
-            <p id="reviewModalSubtitle" class="text-[11px] text-slate-500">Màn hình đối soát song song</p>
+            <h3 id="reviewModalTitle">Chi tiết tài liệu</h3>
+            <p id="reviewModalSubtitle" class="db-hint">Màn hình đối soát song song</p>
           </div>
         </div>
-
-        <div class="flex items-center space-x-3">
-          <button id="btnToggleVerify" class="px-3.5 py-1.5 rounded-lg text-xs font-medium border flex items-center space-x-1.5 transition">
+        <div class="db-row db-gap-8">
+          <button id="btnToggleVerify" class="db-btn db-btn--ghost db-btn--sm" type="button">
             <i class="fa-solid fa-check"></i>
             <span id="btnVerifyText">Đánh dấu đã đối soát</span>
           </button>
-          <button id="btnSaveReviewForm" class="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-medium shadow-sm transition">
-            Lưu thay đổi
-          </button>
-          <button id="btnCloseReviewModal" class="text-slate-400 hover:text-slate-600 text-xl pl-2">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+          <button id="btnSaveReviewForm" class="db-btn db-btn--primary db-btn--sm" type="button">Lưu thay đổi</button>
+          <button id="btnCloseReviewModal" class="db-modal-close" type="button"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
-
-      <!-- Review Body: Split Screen -->
-      <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-        
-        <!-- Left: Document Viewer -->
-        <div class="flex-1 bg-slate-900/90 flex flex-col border-r border-slate-200 overflow-hidden relative">
-          <div class="h-9 px-4 bg-slate-800 text-slate-300 text-xs flex items-center justify-between">
-            <span id="viewerFilename" class="truncate max-w-xs font-mono">Tài liệu gốc</span>
-            <a id="btnOpenRawFile" href="#" target="_blank" class="text-blue-400 hover:underline text-[11px]">
-              <i class="fa-solid fa-external-link mr-1"></i> Mở tab mới
+      <div class="db-review-body">
+        <div class="db-review-viewer">
+          <div class="db-review-viewer-bar">
+            <span id="viewerFilename" class="db-mono truncate">Tài liệu gốc</span>
+            <a id="btnOpenRawFile" href="#" target="_blank" class="db-link db-link--light">
+              <i class="fa-solid fa-external-link"></i> Mở tab mới
             </a>
           </div>
-          <div class="flex-1 overflow-auto flex items-center justify-center p-2" id="documentViewerContainer">
-            <!-- Iframe or Img injected here -->
-          </div>
+          <div id="documentViewerContainer" class="db-review-viewer-frame"><!-- JS --></div>
         </div>
-
-        <!-- Right: Extracted Fields Editor Form -->
-        <div class="w-full md:w-[480px] bg-white flex flex-col h-full overflow-hidden">
-          <div class="p-4 border-b border-slate-100 bg-slate-50/50">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-700">Dữ liệu bóc tách được:</span>
-              <span id="reviewConfidenceBadge" class="text-[11px] font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                Độ tin cậy: 95%
-              </span>
-            </div>
-            <div id="reviewAiSummary" class="mt-2 text-xs text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200 italic">
-              Đang tải tóm tắt...
-            </div>
+        <div class="db-review-form">
+          <div class="db-review-form-head">
+            <span class="db-label">Dữ liệu bóc tách:</span>
+            <span id="reviewConfidenceBadge" class="db-badge db-badge--ok">Độ tin cậy: 95%</span>
           </div>
-
-          <!-- Fields list -->
-          <div class="flex-1 overflow-y-auto p-4 space-y-3.5" id="reviewFormFields">
-            <!-- Dynamic Form Fields rendered here -->
-          </div>
+          <div id="reviewAiSummary" class="db-review-summary">Đang tải tóm tắt…</div>
+          <div id="reviewFormFields" class="db-review-fields"><!-- JS --></div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- ================= CAMERA MODAL ================= -->
+  <!-- Camera Modal -->
   <div id="cameraModal" class="camera-modal fixed inset-0 z-50 flex items-center justify-center hidden">
-    <div class="camera-dialog bg-black w-full max-w-lg rounded-[2rem] overflow-hidden flex flex-col shadow-2xl">
-
-      <!-- Top bar -->
-      <div class="camera-header flex items-center justify-between px-5 pt-5 pb-3">
-        <button id="btnCloseCamera" type="button"
-          class="camera-header-button w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition" aria-label="Đóng camera">
-          <i class="fa-solid fa-xmark text-lg"></i>
+    <div class="camera-dialog">
+      <div class="camera-header">
+        <button id="btnCloseCamera" type="button" class="camera-header-button" aria-label="Đóng camera">
+          <i class="fa-solid fa-xmark"></i>
         </button>
-        <div class="camera-heading text-center">
-          <p class="text-white text-sm font-semibold tracking-wide">QUÉT TÀI LIỆU</p>
-          <p class="text-white/55 text-[11px] mt-1">Giữ máy song song với mặt giấy</p>
+        <div class="camera-heading">
+          <p>QUÉT TÀI LIỆU</p>
+          <p class="camera-heading-sub">Giữ máy song song với mặt giấy</p>
         </div>
-        <button id="btnSwitchCamera" type="button" class="camera-header-button w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition" aria-label="Đổi camera">
-          <i class="fa-solid fa-camera-rotate text-base"></i>
+        <button id="btnSwitchCamera" type="button" class="camera-header-button" aria-label="Đổi camera">
+          <i class="fa-solid fa-camera-rotate"></i>
         </button>
       </div>
-
-      <!-- Viewfinder area -->
-      <div class="camera-viewfinder relative bg-neutral-950 mx-3 rounded-2xl overflow-hidden">
-        <!-- Live video -->
-        <video id="cameraVideo" autoplay playsinline muted
-          class="camera-media camera-video object-cover"></video>
-
-        <!-- Preview canvas (hidden until snap) -->
-        <canvas id="cameraCanvas"
-          class="camera-media camera-preview object-contain hidden"></canvas>
-
-        <div id="cameraStatus" class="camera-status absolute inset-0 flex items-center justify-center p-6 text-center text-white" role="status">
-          <p id="cameraStatusMessage" class="max-w-xs text-sm">Đang kết nối camera...</p>
+      <div class="camera-viewfinder">
+        <video id="cameraVideo" autoplay playsinline muted class="camera-media camera-video"></video>
+        <canvas id="cameraCanvas" class="camera-media camera-preview hidden"></canvas>
+        <div id="cameraStatus" class="camera-status" role="status">
+          <p id="cameraStatusMessage">Đang kết nối camera…</p>
         </div>
-
-        <!-- Corner bracket guides -->
-        <div id="cameraGuide" class="absolute inset-5 pointer-events-none">
-          <div class="absolute top-0 left-0 w-9 h-9 border-t-[3px] border-l-[3px] border-white/70 rounded-tl-xl"></div>
-          <div class="absolute top-0 right-0 w-9 h-9 border-t-[3px] border-r-[3px] border-white/70 rounded-tr-xl"></div>
-          <div class="absolute bottom-0 left-0 w-9 h-9 border-b-[3px] border-l-[3px] border-white/70 rounded-bl-xl"></div>
-          <div class="absolute bottom-0 right-0 w-9 h-9 border-b-[3px] border-r-[3px] border-white/70 rounded-br-xl"></div>
+        <div id="cameraGuide" class="camera-guide">
+          <span class="cg cg-tl"></span><span class="cg cg-tr"></span>
+          <span class="cg cg-bl"></span><span class="cg cg-br"></span>
         </div>
-
-        <!-- White flash overlay -->
-        <div id="cameraFlash" class="absolute inset-0 bg-white pointer-events-none" style="opacity:0; transition:opacity 0.08s;"></div>
+        <div id="cameraFlash" class="camera-flash"></div>
       </div>
-
-      <button id="btnNativeCamera" type="button" class="hidden mx-5 mb-1 py-2.5 px-4 rounded-xl border border-white/20 text-white/80 text-xs hover:bg-white/10 transition">
-        Chụp bằng camera điện thoại
-      </button>
+      <button id="btnNativeCamera" type="button" class="hidden camera-native-btn">Chụp bằng camera điện thoại</button>
       <input id="nativeCameraInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
-
-      <!-- Switch to QR Connect helper button inside camera modal -->
-      <button id="btnSwitchToQrConnect" type="button" class="mx-5 my-1 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-white/90 text-xs flex items-center justify-center space-x-2 transition border border-white/10">
-        <i class="fa-solid fa-qrcode text-brand-400"></i>
-        <span>Camera máy tính mờ? Dùng điện thoại chụp (Quét mã QR)</span>
+      <button id="btnSwitchToQrConnect" type="button" class="camera-qr-btn">
+        <i class="fa-solid fa-qrcode"></i>
+        <span>Camera mờ? Dùng điện thoại chụp (QR)</span>
       </button>
-
-      <!-- Controls -->
-      <div class="camera-controls flex items-center justify-between px-10 py-7">
-
-        <!-- Left: Chụp lại (hidden until captured) -->
-        <div id="btnRetakeWrap" class="hidden flex-col items-center gap-2">
-          <button id="btnRetake"
-            class="w-13 h-13 w-[52px] h-[52px] rounded-full bg-white/12 hover:bg-white/20 border border-white/20 flex items-center justify-center transition active:scale-90">
-            <i class="fa-solid fa-rotate-left text-white text-base"></i>
-          </button>
-          <span class="text-white/40 text-[11px]">Chụp lại</span>
+      <div class="camera-controls">
+        <div id="btnRetakeWrap" class="hidden camera-side-action">
+          <button id="btnRetake" class="camera-side-btn"><i class="fa-solid fa-rotate-left"></i></button>
+          <span>Chụp lại</span>
         </div>
-        <!-- Spacer -->
-        <div id="retakeSpacer" class="w-[52px]"></div>
-
-        <!-- Center: Nút chụp (Shutter) -->
-        <button id="btnCapture"
-          type="button" aria-label="Chụp ảnh"
-          class="relative w-[78px] h-[78px] rounded-full flex-shrink-0 flex items-center justify-center active:scale-90 transition-transform duration-100 focus:outline-none">
-          <!-- Outer white ring -->
-          <span class="absolute inset-0 rounded-full border-[5px] border-white"></span>
-          <!-- Inner circle -->
-          <span id="shutterInner"
-            class="relative z-10 w-[60px] h-[60px] rounded-full bg-white border-[3.5px] border-slate-200 transition-all duration-100"></span>
+        <div id="retakeSpacer" class="camera-spacer"></div>
+        <button id="btnCapture" type="button" class="camera-shutter" aria-label="Chụp ảnh">
+          <span class="camera-shutter-ring"></span>
+          <span id="shutterInner" class="camera-shutter-inner"></span>
         </button>
-
-        <!-- Right: Dùng ảnh này (hidden until captured) -->
-        <div id="btnConfirmWrap" class="hidden flex-col items-center gap-2">
-          <button id="btnConfirmCapture"
-            class="w-[52px] h-[52px] rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center transition shadow-lg shadow-emerald-500/30 active:scale-90">
-            <i class="fa-solid fa-check text-white text-lg"></i>
-          </button>
-          <span class="text-white/40 text-[11px]">Dùng ảnh</span>
+        <div id="btnConfirmWrap" class="hidden camera-side-action">
+          <button id="btnConfirmCapture" class="camera-confirm-btn"><i class="fa-solid fa-check"></i></button>
+          <span>Dùng ảnh</span>
         </div>
-        <!-- Spacer -->
-        <div id="confirmSpacer" class="w-[52px]"></div>
-
+        <div id="confirmSpacer" class="camera-spacer"></div>
       </div>
     </div>
   </div>
 
-  <!-- ================= MOBILE CONNECT QR MODAL ================= -->
-  <div id="mobileConnectModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 flex flex-col relative overflow-hidden">
-      
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between pb-3.5 border-b border-slate-100">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 text-lg shadow-sm">
-            <i class="fa-solid fa-qrcode"></i>
-          </div>
+  <!-- QR Connect Modal -->
+  <div id="mobileConnectModal" class="db-overlay hidden">
+    <div class="db-modal db-modal--sm">
+      <div class="db-modal-head">
+        <div class="db-row db-gap-12">
+          <div class="db-icon-box"><i class="fa-solid fa-qrcode"></i></div>
           <div>
-            <h3 class="text-base font-bold text-slate-900">Quét mã QR kết nối điện thoại</h3>
-            <p class="text-xs text-slate-500">Chụp tài liệu từ điện thoại &amp; đồng bộ tự động lên máy tính</p>
+            <h3>Quét mã QR kết nối điện thoại</h3>
+            <p class="db-hint">Chụp tài liệu từ điện thoại & đồng bộ tự động</p>
           </div>
         </div>
-        <button id="btnCloseMobileConnect" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button id="btnCloseMobileConnect" class="db-modal-close" type="button"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- Mode Selector -->
-      <div class="mt-4 flex rounded-xl bg-slate-100 p-1 text-xs font-medium">
-        <button id="tabModeScanner" class="flex-1 py-1.5 rounded-lg bg-white text-brand-700 font-semibold shadow-sm transition">
-          <i class="fa-solid fa-camera mr-1"></i> Quét &amp; gửi tài liệu
-        </button>
-        <button id="tabModeFullApp" class="flex-1 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
-          <i class="fa-solid fa-desktop mr-1"></i> Mở toàn bộ app
-        </button>
-      </div>
-
-      <!-- QR Code Display Area -->
-      <div class="mt-4 flex flex-col items-center">
-        <!-- QR Code Container Box -->
-        <div class="p-3 bg-white rounded-2xl border-2 border-slate-200/90 shadow-sm flex items-center justify-center relative min-w-[210px] min-h-[210px]">
-          <div id="qrcodeBox" class="flex items-center justify-center"></div>
-          <div id="qrLoading" class="absolute inset-0 flex items-center justify-center bg-white/90 rounded-2xl hidden">
-            <i class="fa-solid fa-spinner fa-spin text-brand-600 text-2xl"></i>
-          </div>
-        </div>
-
-        <!-- Connection Status Pill -->
-        <div id="qrConnectionStatus" class="mt-3.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 flex items-center space-x-2">
-          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-          <span id="qrStatusText">Đang đợi điện thoại quét mã...</span>
-        </div>
-
-        <!-- Transferred counter banner -->
-        <div id="qrFilesReceivedBanner" class="mt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl border border-emerald-200 flex items-center space-x-1.5 hidden animate-bounce">
-          <i class="fa-solid fa-circle-check text-emerald-600"></i>
-          <span id="qrFilesReceivedText">Đã nhận 0 tài liệu từ điện thoại</span>
-        </div>
-      </div>
-
-      <!-- Quick Steps -->
-      <div class="mt-3.5 bg-slate-50 border border-slate-200/70 rounded-2xl p-3 space-y-1.5 text-[11px] text-slate-600">
-        <div class="flex items-start space-x-2">
-          <span class="w-4 h-4 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">1</span>
-          <span>Điện thoại và máy tính phải <b>cùng kết nối 1 mạng Wi-Fi</b>.</span>
-        </div>
-        <div class="flex items-start space-x-2">
-          <span class="w-4 h-4 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">2</span>
-          <span>Mở <b>Camera</b> điện thoại hoặc <b>Zalo</b> quét mã QR phía trên.</span>
-        </div>
-        <div class="flex items-start space-x-2">
-          <span class="w-4 h-4 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">3</span>
-          <span>Chụp ảnh hóa đơn/tài liệu, ảnh sẽ tự động hiện ngay trên máy tính!</span>
-        </div>
-      </div>
-
-      <!-- URL link & IP Selector -->
-      <div class="mt-3 pt-3 border-t border-slate-100">
-        <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-          <span>Hoặc mở trực tiếp link:</span>
-          <button id="btnCopyConnectUrl" class="text-brand-600 hover:underline flex items-center space-x-1 font-medium">
-            <i class="fa-solid fa-copy"></i>
-            <span>Sao chép</span>
+      <div class="db-modal-body">
+        <!-- Mode Selector -->
+        <div class="db-tabs">
+          <button id="tabModeScanner" class="db-tab db-tab--active" type="button">
+            <i class="fa-solid fa-camera"></i> Quét & gửi tài liệu
+          </button>
+          <button id="tabModeFullApp" class="db-tab" type="button">
+            <i class="fa-solid fa-desktop"></i> Mở toàn bộ app
           </button>
         </div>
-        <div class="flex items-center space-x-1.5">
-          <input type="text" id="inputConnectUrl" readonly class="flex-1 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-[11px] font-mono text-slate-700 select-all">
-          <select id="selectNetworkIp" class="bg-white border border-slate-300 text-slate-700 text-[11px] rounded-lg px-2 py-1 hidden" title="Đổi IP mạng nếu cần"></select>
+
+        <!-- QR Code -->
+        <div class="db-qr-box">
+          <div class="db-qr-frame">
+            <div id="qrcodeBox"></div>
+            <div id="qrLoading" class="db-qr-loading hidden"><i class="fa-solid fa-spinner fa-spin"></i></div>
+          </div>
+          <div id="qrConnectionStatus" class="db-status-pill db-status-pill--warn">
+            <span class="db-dot db-dot--warn pulse"></span>
+            <span id="qrStatusText">Đang đợi điện thoại quét mã…</span>
+          </div>
+          <div id="qrFilesReceivedBanner" class="db-status-pill db-status-pill--ok hidden">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="qrFilesReceivedText">Đã nhận 0 tài liệu từ điện thoại</span>
+          </div>
+        </div>
+
+        <!-- Steps -->
+        <div class="db-steps">
+          <div class="db-step"><span class="db-step-num">1</span> Điện thoại và máy tính phải <b>cùng mạng Wi-Fi</b>.</div>
+          <div class="db-step"><span class="db-step-num">2</span> Mở <b>Camera</b> hoặc <b>Zalo</b> quét mã QR.</div>
+          <div class="db-step"><span class="db-step-num">3</span> Chụp tài liệu — ảnh tự động lên máy tính!</div>
+        </div>
+
+        <!-- URL -->
+        <div class="db-qr-url">
+          <div class="db-row db-between db-hint">
+            <span>Hoặc mở trực tiếp link:</span>
+            <button id="btnCopyConnectUrl" class="db-link" type="button"><i class="fa-solid fa-copy"></i> Sao chép</button>
+          </div>
+          <div class="db-row db-gap-8" style="margin-top:4px">
+            <input type="text" id="inputConnectUrl" readonly class="db-input db-input--mono db-input--full">
+            <select id="selectNetworkIp" class="db-select hidden"></select>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+  <!-- Toast -->
+  <div id="toastContainer" class="db-toast-container"></div>
 
   <script src="/static/app.js"></script>
+  <script src="/static/project-chat.js"></script>
 </body>
 </html>
