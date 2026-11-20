@@ -7,20 +7,26 @@ from typing import Dict, Any, List, Optional
 # Cache các model hỗ trợ generateContent cho từng API key
 _CACHED_MODELS: Dict[str, List[str]] = {}
 
+# Danh sách model ưu tiên theo thứ tự từ nhanh & ổn định nhất đến các bản fallback
 PREFERRED_MODELS = [
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-exp",
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-flash",
-    "gemini-1.5-flash-001",
-    "gemini-1.5-flash-002",
-    "gemini-1.5-pro-latest",
-    "gemini-1.5-pro"
+    "gemini-3.8-flash",
+    "gemini-3-flash-preview",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-flash-lite-latest",
+    "gemini-2.5-flash-lite",
+    "gemini-flash-latest"
+]
+
+# Các từ khóa của model không dùng cho trích xuất văn bản/tài liệu (TTS, Audio, Image Generation, v.v.)
+EXCLUDED_MODEL_KEYWORDS = [
+    "tts", "transcribe", "clip", "robotics", "image",
+    "preview-tts", "embedding", "customtools"
 ]
 
 async def get_available_models(client: httpx.AsyncClient, api_key: str) -> List[str]:
     """
     Truy vấn danh sách model thực tế được hỗ trợ bởi API Key của người dùng.
+    Lọc bỏ các model TTS / Audio / Image-generation không phù hợp cho đọc tài liệu.
     """
     if api_key in _CACHED_MODELS and _CACHED_MODELS[api_key]:
         return _CACHED_MODELS[api_key]
@@ -28,16 +34,18 @@ async def get_available_models(client: httpx.AsyncClient, api_key: str) -> List[
     for api_ver in ["v1beta", "v1"]:
         try:
             url = f"https://generativelanguage.googleapis.com/{api_ver}/models?key={api_key}"
-            res = await client.get(url, timeout=10.0)
+            res = await client.get(url, timeout=8.0)
             if res.status_code == 200:
                 data = res.json()
                 models_list = data.get("models", [])
                 valid_models = []
                 for m in models_list:
-                    # Model name thường có dạng "models/gemini-..."
                     name = m.get("name", "").replace("models/", "")
                     methods = m.get("supportedGenerationMethods", [])
                     if "generateContent" in methods:
+                        # Bỏ qua các model chuyên biệt âm thanh, tts, v.v.
+                        if any(kw in name.lower() for kw in EXCLUDED_MODEL_KEYWORDS):
+                            continue
                         valid_models.append(name)
 
                 if valid_models:
@@ -57,10 +65,10 @@ async def extract_document_data(
 ) -> Dict[str, Any]:
     """
     Gửi file tài liệu (PDF, Ảnh) và danh sách trường cần trích xuất đến Gemini API.
-    Sử dụng structured output và cơ chế fallback model tự động để không bao giờ bị lỗi 404 Model Not Found.
+    Sử dụng structured output và cơ chế fallback model tự động để không bao giờ bị lỗi.
     """
     if not api_key:
-        raise ValueError("Chưa cung cấp Gemini API Key. Vui lòng nhập API Key trong phần Cài đặt.")
+        raise ValueError("Chưa cung cấp Gemini API Key. Vui lòng cấu hình GEMINI_API_KEY trong file .env.")
 
     # Mã hoá file thành Base64
     b64_data = base64.b64encode(file_bytes).decode("utf-8")
@@ -82,12 +90,12 @@ async def extract_document_data(
 
     system_instruction = (
         "Bạn là chuyên gia trích xuất dữ liệu tài liệu hàng đầu. "
-        "Nhiệm vụ của bạn là đọc kỹ tài liệu được cung cấp (hóa đơn, hợp đồng, chứng từ, CV, báo cáo, biểu mẫu, bảng tính, danh sách tổng hợp,...) "
+        "Nhiệm vụ của bạn là đọc kỹ tài liệu được cung cấp (hóa đơn, chứng từ, đơn đăng ký đất đai, bản đồ địa chính, hợp đồng, biểu mẫu,...) "
         "và trích xuất chính xác toàn bộ các dòng thông tin được yêu cầu dưới dạng JSON chuẩn.\n"
         "QUY TẮC CỰC KỲ QUAN TRỌNG VỀ ĐA DÒNG DỮ LIỆU:\n"
         "1. Nếu tài liệu chứa một danh sách, bảng dữ liệu gồm NHIỀU HÀNG/DÒNG (ví dụ STT 1, 2, 3, 4, 5... hoặc nhiều đối tượng/khoản mục), "
         "bạn BẮT BUỘC phải duyệt qua từng dòng một và trích xuất TẤT CẢ các dòng đó vào mảng `items`. Tuyệt đối không được chỉ lấy dòng đầu tiên hoặc bỏ sót bất kỳ dòng nào!\n"
-        "2. Nếu tài liệu chỉ là một văn bản đơn lẻ (1 hóa đơn duy nhất, 1 CV duy nhất), mảng `items` sẽ có 1 phần tử tương ứng.\n"
+        "2. Nếu tài liệu chỉ là một văn bản đơn lẻ (1 đơn đăng ký, 1 hóa đơn), mảng `items` sẽ có 1 phần tử tương ứng.\n"
         "3. Nếu một trường không tìm thấy trong tài liệu hoặc dòng tương ứng, hãy để chuỗi rỗng \"\" hoặc \"N/A\", không tự ý bịa đặt thông tin."
     )
 
@@ -156,15 +164,16 @@ async def extract_document_data(
         "Content-Type": "application/json"
     }
 
-    async with httpx.AsyncClient(timeout=90.0) as client:
+    async with httpx.AsyncClient(timeout=45.0) as client:
         # Lấy danh sách các model hợp lệ khả dụng
         available_models = await get_available_models(client, api_key)
 
         candidate_models = []
-        if model_name and model_name in available_models:
+        # Nếu người dùng chỉ định cụ thể một model hợp lệ khác 'auto'
+        if model_name and model_name != "auto" and model_name in available_models:
             candidate_models.append(model_name)
 
-        # Ưu tiên các model Flash có trong danh sách khả dụng
+        # Ưu tiên các model trong PREFERRED_MODELS có trong available_models
         for pref in PREFERRED_MODELS:
             if pref in available_models and pref not in candidate_models:
                 candidate_models.append(pref)
@@ -179,6 +188,7 @@ async def extract_document_data(
 
         last_error = None
         for m in candidate_models:
+            # Ưu tiên v1beta vì đây là endpoint hỗ trợ responseSchema và các model mới nhất
             for api_ver in ["v1beta", "v1"]:
                 url = f"https://generativelanguage.googleapis.com/{api_ver}/models/{m}:generateContent?key={api_key}"
                 try:
@@ -187,7 +197,8 @@ async def extract_document_data(
                         resp_data = response.json()
                         candidates = resp_data.get("candidates", [])
                         if not candidates:
-                            raise ValueError("Gemini không trả về kết quả khả dụng.")
+                            last_error = f"Model {m} không trả về candidates."
+                            continue
 
                         text_content = candidates[0]["content"]["parts"][0]["text"]
                         parsed_json = json.loads(text_content)
@@ -200,20 +211,19 @@ async def extract_document_data(
                             flat_item = {k: v for k, v in parsed_json.items() if not k.startswith("_")}
                             parsed_json["items"] = [flat_item] if flat_item else []
                         return parsed_json
-                    elif response.status_code == 404:
-                        # Thử model tiếp theo
-                        last_error = f"Model {m} ({api_ver}) trả về 404 Not Found"
+                    elif response.status_code in (404, 503, 429, 500, 400):
+                        # Gặp 404 (model không hỗ trợ endpoint/deprecated) hoặc 503 (quá tải) -> Thử model tiếp theo ngay lập tức
+                        err_text = response.text[:200]
+                        last_error = f"Model {m} ({api_ver}) [{response.status_code}]: {err_text}"
                         continue
                     else:
-                        err_msg = response.text
-                        last_error = f"Gemini API [{m} - {response.status_code}]: {err_msg}"
+                        last_error = f"Gemini API [{m} - {response.status_code}]: {response.text[:200]}"
+                        continue
                 except Exception as e:
                     if isinstance(e, (httpx.ConnectError, httpx.TimeoutException)):
-                        last_error = (
-                            "Cannot connect to the Gemini API. Check your internet connection, "
-                            "firewall, or proxy settings, then try again."
-                        )
+                        last_error = f"Timeout hoặc mất kết nối khi gọi model {m}: {str(e)}"
                     else:
                         last_error = str(e)
+                    continue
 
         raise RuntimeError(f"Trích xuất thất bại: {last_error}")
