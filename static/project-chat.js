@@ -21,10 +21,86 @@
     if (open) input.focus();
   }
 
+  function appendInlineMarkdown(parent, text) {
+    const pattern = /\*\*([^*]+)\*\*|`([^`]+)`/g;
+    let cursor = 0;
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      parent.appendChild(document.createTextNode(text.slice(cursor, match.index)));
+      const node = match[1] !== undefined ? document.createElement("strong") : document.createElement("code");
+      node.textContent = match[1] !== undefined ? match[1] : match[2];
+      parent.appendChild(node);
+      cursor = pattern.lastIndex;
+    }
+    parent.appendChild(document.createTextNode(text.slice(cursor)));
+  }
+
+  function renderAssistantMarkdown(container, markdown) {
+    container.replaceChildren();
+    let paragraph = [];
+    let list = null;
+    let listKind = "";
+
+    const flushParagraph = () => {
+      if (!paragraph.length) return;
+      const p = document.createElement("p");
+      appendInlineMarkdown(p, paragraph.join(" "));
+      container.appendChild(p);
+      paragraph = [];
+    };
+    const closeList = () => {
+      list = null;
+      listKind = "";
+    };
+
+    for (const rawLine of String(markdown || "").split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line) {
+        flushParagraph();
+        closeList();
+        continue;
+      }
+
+      const heading = line.match(/^#{1,6}\s+(.+)$/);
+      if (heading) {
+        flushParagraph();
+        closeList();
+        const h = document.createElement("h3");
+        appendInlineMarkdown(h, heading[1]);
+        container.appendChild(h);
+        continue;
+      }
+
+      const item = line.match(/^(?:[-*]\s+|(\d+)[.)]\s+)(.+)$/);
+      if (item) {
+        flushParagraph();
+        const kind = item[1] ? "ol" : "ul";
+        if (!list || listKind !== kind) {
+          closeList();
+          list = document.createElement(kind);
+          listKind = kind;
+          container.appendChild(list);
+        }
+        const li = document.createElement("li");
+        appendInlineMarkdown(li, item[2]);
+        list.appendChild(li);
+        continue;
+      }
+
+      closeList();
+      paragraph.push(line.replace(/^#{1,6}\s*/, ""));
+    }
+    flushParagraph();
+  }
+
   function addMessage(role, content, extraClass = "") {
     const node = document.createElement("div");
     node.className = `project-chat-message ${role} ${extraClass}`.trim();
-    node.textContent = content;
+    if (role === "assistant" && content !== "Đang suy nghĩ…") {
+      renderAssistantMarkdown(node, content);
+    } else {
+      node.textContent = content;
+    }
     messages.appendChild(node);
     messages.scrollTop = messages.scrollHeight;
     return node;
@@ -114,7 +190,7 @@
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.detail || "Không gửi được câu hỏi.");
-      pending.textContent = result.answer;
+      renderAssistantMarkdown(pending, result.answer);
       history.push({ role: "user", content: message }, { role: "model", content: result.answer });
       if (history.length > 12) history.splice(0, history.length - 12);
     } catch (error) {
