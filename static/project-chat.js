@@ -6,7 +6,9 @@
   const input = document.getElementById("projectChatInput");
   const messages = document.getElementById("projectChatMessages");
   const send = document.getElementById("projectChatSend");
-  const history = [];
+  const userId = sessionStorage.getItem("docubatch_dify_user") || `docubatch-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  sessionStorage.setItem("docubatch_dify_user", userId);
+  let conversationId = "";
 
   const noticeToggle = document.getElementById("landNoticesToggle");
   const noticePanel = document.getElementById("landNoticesPanel");
@@ -110,13 +112,12 @@
       const response = await fetch("/api/project-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, history: history.slice(-12) })
+        body: JSON.stringify({ message, user_id: userId, conversation_id: conversationId })
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.detail || "Không gửi được câu hỏi.");
       pending.textContent = result.answer;
-      history.push({ role: "user", content: message }, { role: "model", content: result.answer });
-      if (history.length > 12) history.splice(0, history.length - 12);
+      conversationId = result.conversation_id || conversationId;
     } catch (error) {
       pending.textContent = error.message || "Có lỗi khi kết nối trợ lý.";
       pending.classList.add("error");

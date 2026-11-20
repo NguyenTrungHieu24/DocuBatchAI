@@ -30,7 +30,7 @@
    - Chụp ảnh hóa đơn, chứng từ trực tiếp bằng camera độ nét cao của điện thoại hoặc chọn nhiều ảnh/PDF từ máy.
    - Tài liệu tự động chuyển thẳng sang danh sách xử lý trên màn hình máy tính trong tích tắc.
    - Chụp hai mặt của nhiều loại giấy tờ bằng điện thoại; ứng dụng ghép ảnh thành một tài liệu. Bìa giấy chứng nhận tự chọn mẫu riêng, các loại khác dùng mẫu đang chọn trên máy tính.
-6. **Bảo mật:** Gemini API key chỉ được lưu trong file `.env` trên máy chủ; trình duyệt không nhận hoặc lưu key.
+6. **Bảo mật:** Gemini và Dify API key chỉ được lưu trong file `.env` trên máy chủ; trình duyệt không nhận hoặc lưu key.
 7. **Trợ lý đất đai:** Mở nút “Hỏi trợ lý đất đai” ở góc dưới để trò chuyện với agent Dify về hồ sơ, thủ tục và quy trình. Agent và kho kiến thức được cấu hình riêng trên Dify.
 
 ---
@@ -66,11 +66,11 @@ Khởi động lại ứng dụng sau khi sửa `.env`. Không commit hoặc chi
 DIFY_API_KEY=app-...
 DIFY_API_BASE_URL=https://api.dify.ai/v1
 ```
-Với Dify tự host, đặt `DIFY_API_BASE_URL` thành địa chỉ máy chủ Dify kèm `/v1`. API key chỉ được gửi từ backend DocuBatch đến Dify, không đưa xuống trình duyệt. `GEMINI_API_KEY` vẫn được dùng riêng cho chức năng trích xuất tài liệu.
+Với Dify tự host, đặt `DIFY_API_BASE_URL` thành địa chỉ máy chủ Dify kèm `/v1`. API key chỉ được gửi từ backend DocuBatch đến Dify, không đưa xuống trình duyệt. `DIFY_API_KEY` dùng cho chat; `GEMINI_API_KEY` dùng riêng cho chức năng trích xuất tài liệu.
 
 ### Deploy trên Vercel
 
-Vercel dùng `api/index.py` làm entrypoint cho FastAPI. Trong Project Settings → Environment Variables, đặt `GEMINI_API_KEY`, `DIFY_API_KEY` và nếu cần `DIFY_API_BASE_URL`, sau đó redeploy để áp dụng. Tệp tải lên trên Vercel được lưu tạm trong `/tmp` và không được giữ lại lâu dài.
+Vercel dùng `api/index.py` làm entrypoint cho FastAPI. Trong Project Settings → Environment Variables, đặt `GEMINI_API_KEY` cho trích xuất, `DIFY_API_KEY` cho chat và nếu cần `DIFY_API_BASE_URL`, sau đó redeploy để áp dụng. Tệp tải lên trên Vercel được lưu tạm trong `/tmp` và không được giữ lại lâu dài.
 
 ### Troubleshooting extraction
 
