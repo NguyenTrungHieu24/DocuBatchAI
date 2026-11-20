@@ -20,7 +20,7 @@ async def answer_project_question(
 ) -> dict:
     payload = {
         "inputs": {},
-        "query": f"{LAND_ASSISTANT_CONTEXT}\\n{message}",
+        "query": f"{LAND_ASSISTANT_CONTEXT}\n{message}",
         "response_mode": "blocking",
         "user": user_id,
     }
@@ -35,6 +35,20 @@ async def answer_project_question(
                 json=payload,
             )
         if response.status_code != 200:
+            try:
+                error_data = response.json()
+            except ValueError:
+                error_data = {}
+            error_message = str(error_data.get("message") or error_data.get("error") or "")
+            normalized_error = error_message.lower()
+            if "quota" in normalized_error or "limit" in normalized_error:
+                raise RuntimeError(
+                    "Dify đã hết hạn mức sử dụng model. Hãy kiểm tra hạn mức/provider model trong Dify hoặc chọn model còn hạn mức."
+                )
+            if response.status_code in (401, 403):
+                raise RuntimeError(
+                    "Dify từ chối API key. Kiểm tra DIFY_API_KEY trong cấu hình Render có phải key API của đúng ứng dụng đã publish không."
+                )
             raise RuntimeError(f"Dify API trả về mã {response.status_code}.")
         result = response.json()
         answer = result.get("answer", "").strip()
