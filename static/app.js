@@ -116,7 +116,6 @@ const el = {
   tableHeaderRow: document.getElementById("tableHeaderRow"),
   tableBody: document.getElementById("tableBody"),
   btnExportExcel: document.getElementById("btnExportExcel"),
-  btnExportJson: document.getElementById("btnExportJson"),
   btnClearTable: document.getElementById("btnClearTable"),
 
   // Settings Modal
@@ -636,32 +635,6 @@ async function exportToExcel() {
   }
 }
 
-function exportToJson() {
-  if (state.processedRecords.length === 0) {
-    showToast("Không có dữ liệu để xuất JSON.", "warning");
-    return;
-  }
-
-  const exportData = {
-    exported_at: new Date().toISOString(),
-    schema: state.activeSchema,
-    records: state.processedRecords.map(r => ({
-      filename: r.filename,
-      extracted_data: r.extractedData,
-      verified: r.verified
-    }))
-  };
-
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `DocuBatch_Export_${new Date().toISOString().slice(0, 10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  showToast("Đã tải xuống file JSON thành công!", "success");
-}
 
 // ================= SCHEMA MODAL =================
 function openSchemaModal() {
@@ -867,7 +840,6 @@ function setupEventListeners() {
 
   // Export
   el.btnExportExcel.addEventListener("click", exportToExcel);
-  el.btnExportJson.addEventListener("click", exportToJson);
 
   // Clear Table
   if (el.btnClearTable) {
