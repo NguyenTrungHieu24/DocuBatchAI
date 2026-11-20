@@ -59,7 +59,7 @@ Khởi động lại ứng dụng sau khi sửa `.env`. Không commit hoặc chi
 
 ### 5. Kết nối trợ lý dự án với Dify
 
-1. Tạo ứng dụng Chatflow hoặc Agent trong Dify, thêm chỉ dẫn phù hợp cho trợ lý đất đai và kết nối kho kiến thức từ nguồn pháp lý chính thức, còn hiệu lực.
+1. Tạo ứng dụng Chatflow hoặc Agent trong Dify; trong System Instructions đặt vai trò trợ lý đất đai, giới hạn phạm vi trả lời và yêu cầu không bịa căn cứ. Kết nối kho kiến thức từ nguồn pháp lý chính thức, còn hiệu lực. Backend DocuBatch cũng gửi chỉ dẫn phạm vi cùng từng câu hỏi.
 2. Xuất bản ứng dụng, mở **API Access** của ứng dụng và tạo API key.
 3. Thêm cấu hình sau vào `.env` của DocuBatch AI:
 ```env
