@@ -242,64 +242,54 @@ async def get_connect_page():
         return FileResponse(connect_path)
     raise HTTPException(status_code=404, detail="Không tìm thấy trang mobile_connect.html")
 
-@app.get("/api/connect/info")
-async def get_connect_info(request: Request):
-    """
-    Lấy thông tin mạng LAN & địa chỉ kết nối cho điện thoại.
-    """
-    host_header = request.headers.get("host", "")
-    port = 8000
-    if ":" in host_header:
-        try:
-            port = int(host_header.split(":")[-1])
-        except Exception:
-            pass
+def get_mobile_urls(request: Request, session_id: Optional[str] = None):
+    """Build public HTTPS URLs behind a proxy, or LAN URLs for local use."""
+    host_header = request.headers.get("x-forwarded-host") or request.headers.get("host", "localhost")
+    forwarded_proto = request.headers.get("x-forwarded-proto", "").split(",")[0].strip().lower()
+    is_public_https = forwarded_proto == "https" or host_header.split(":")[0].endswith(".onrender.com")
 
     local_ip = connect_service.get_local_ip()
     available_ips = connect_service.get_available_ips()
 
-    client_host = host_header.split(":")[0] if host_header else "localhost"
-    mobile_host = local_ip if (client_host in ["localhost", "127.0.0.1", "0.0.0.0"]) else client_host
+    if is_public_https:
+        base_url = f"https://{host_header.rstrip('/')}"
+        port = 443
+        mobile_host = host_header
+        connect_path = f"/connect?session={session_id}" if session_id else "/connect"
+        return {
+            "local_ip": local_ip,
+            "available_ips": available_ips,
+            "port": port,
+            "mobile_host": mobile_host,
+            "public_url": True,
+            "connect_url": f"{base_url}{connect_path}",
+            "app_url": f"{base_url}/",
+        }
 
+    port = 8000
+    client_host = host_header.split(":")[0]
+    mobile_host = local_ip if client_host in ("localhost", "127.0.0.1", "0.0.0.0") else client_host
+    connect_path = f"/connect?session={session_id}" if session_id else "/connect"
     return {
         "local_ip": local_ip,
         "available_ips": available_ips,
         "port": port,
         "mobile_host": mobile_host,
-        "connect_url": f"http://{mobile_host}:{port}/connect",
-        "app_url": f"http://{mobile_host}:{port}/"
+        "public_url": False,
+        "connect_url": f"http://{mobile_host}:{port}{connect_path}",
+        "app_url": f"http://{mobile_host}:{port}/",
     }
+
+@app.get("/api/connect/info")
+async def get_connect_info(request: Request):
+    """Return public HTTPS links or local-network links for phone pairing."""
+    return get_mobile_urls(request)
 
 @app.post("/api/connect/session/create")
 async def create_connect_session(request: Request):
-    """
-    Khởi tạo phiên kết nối mới giữa PC và điện thoại.
-    """
+    """Create a phone pairing session and return its reachable URLs."""
     session_id = connect_service.create_session()
-    host_header = request.headers.get("host", "")
-    port = 8000
-    if ":" in host_header:
-        try:
-            port = int(host_header.split(":")[-1])
-        except Exception:
-            pass
-
-    local_ip = connect_service.get_local_ip()
-    available_ips = connect_service.get_available_ips()
-    client_host = host_header.split(":")[0] if host_header else "localhost"
-    mobile_host = local_ip if (client_host in ["localhost", "127.0.0.1", "0.0.0.0"]) else client_host
-
-    connect_url = f"http://{mobile_host}:{port}/connect?session={session_id}"
-    app_url = f"http://{mobile_host}:{port}/"
-
-    return {
-        "session_id": session_id,
-        "connect_url": connect_url,
-        "app_url": app_url,
-        "local_ip": local_ip,
-        "available_ips": available_ips,
-        "port": port
-    }
+    return {"session_id": session_id, **get_mobile_urls(request, session_id)}
 
 @app.get("/api/connect/session/{session_id}/status")
 async def get_connect_session_status(session_id: str):

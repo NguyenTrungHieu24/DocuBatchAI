@@ -1106,7 +1106,8 @@ init();
     totalFilesReceived: 0,
     availableIps: [],
     selectedIp: null,
-    port: 8000
+    port: 8000,
+    publicUrl: false
   };
 
   const elements = {
@@ -1138,7 +1139,8 @@ init();
       qrState.connectUrl = data.connect_url;
       qrState.appUrl = data.app_url;
       qrState.availableIps = data.available_ips || [data.local_ip];
-      qrState.selectedIp = data.local_ip;
+      qrState.publicUrl = data.public_url === true;
+      qrState.selectedIp = qrState.publicUrl ? null : data.local_ip;
       qrState.port = data.port || 8000;
 
       setupIpSelector();
@@ -1170,13 +1172,16 @@ init();
   }
 
   function getActiveUrl() {
+    if (qrState.publicUrl) {
+      return qrState.currentMode === "scanner"
+        ? `${window.location.origin}/connect?session=${encodeURIComponent(qrState.sessionId)}`
+        : `${window.location.origin}/`;
+    }
     const host = qrState.selectedIp || window.location.hostname;
     const portStr = qrState.port ? `:${qrState.port}` : "";
-    if (qrState.currentMode === "scanner") {
-      return `http://${host}${portStr}/connect?session=${qrState.sessionId}`;
-    } else {
-      return `http://${host}${portStr}/`;
-    }
+    return qrState.currentMode === "scanner"
+      ? `http://${host}${portStr}/connect?session=${encodeURIComponent(qrState.sessionId)}`
+      : `http://${host}${portStr}/`;
   }
 
   function renderQrCode() {
